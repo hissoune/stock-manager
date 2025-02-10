@@ -1,7 +1,13 @@
 import type React from "react"
-import { StyleSheet, View, Text, TextInput, TouchableOpacity } from "react-native"
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, ActivityIndicator } from "react-native"
 import { Formik } from "formik"
 import * as Yup from "yup"
+import { useAppDispatch } from "@/hooks/useAppDispatch"
+import { loginAction } from "./(redux)/authSlice"
+import { router } from "expo-router"
+import { useEffect } from "react"
+import { useSelector } from "react-redux"
+import { RootState } from "./(redux)/store"
 
 const validationSchema = Yup.object().shape({
   secretKey: Yup.string()
@@ -10,9 +16,29 @@ const validationSchema = Yup.object().shape({
 })
 
 const LoginPage: React.FC = () => {
+
+    const {isAuthenticated,isLoading}= useSelector((state: RootState) =>state.auth)
+    const dispatch =useAppDispatch();
+
+  
+useEffect(() => {
+  if (!isLoading && isAuthenticated) {
+    router.replace('/(tabs)'); 
+  }
+}, [isLoading, isAuthenticated, router]);
+
+if (isLoading) {
+  return (
+    <View style={styles.loaderContainer}>
+      <ActivityIndicator size="large" color="#fff" />
+    </View>
+  );
+}
+    
     const handleLogin = async (values: { secretKey: string }) => {
         try {
-          
+            dispatch(loginAction(values.secretKey));
+            router.push("/(tabs)");
         } catch (error) {
           console.error("Login error:", error);
         }
@@ -52,6 +78,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 20,
   },
+  loaderContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#000" },
+
   form: {
     width: "100%",
     maxWidth: 400,
