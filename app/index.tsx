@@ -12,22 +12,7 @@ const validationSchema = Yup.object().shape({
 const LoginPage: React.FC = () => {
     const handleLogin = async (values: { secretKey: string }) => {
         try {
-          const response = await fetch(
-            `${process.env.EXPO_PUBLIC_URL}/warehousemans?secretKey=${values.secretKey}`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-      
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-      
-          const data = await response.json();
-          console.log("Secret Key:", data[0]);
+          
         } catch (error) {
           console.error("Login error:", error);
         }
