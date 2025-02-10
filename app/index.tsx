@@ -1,126 +1,67 @@
-import type React from "react"
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, ActivityIndicator } from "react-native"
-import { Formik } from "formik"
-import * as Yup from "yup"
-import { useAppDispatch } from "@/hooks/useAppDispatch"
-import { loginAction } from "./(redux)/authSlice"
-import { router } from "expo-router"
-import { useEffect } from "react"
-import { useSelector } from "react-redux"
-import { RootState } from "./(redux)/store"
+import React, { useEffect } from 'react';
+import { View, Text, ImageBackground, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Icon } from 'react-native-elements';
+import { useRouter } from 'expo-router';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { useSelector } from 'react-redux';
+import { RootState } from './(redux)/store';
 
-const validationSchema = Yup.object().shape({
-  secretKey: Yup.string()
-  .matches(/^[A-Za-z]{2}\d{5}[A-Za-z]{1}$/, "Secret key must start with 2 letters, followed by 6 numbers, and end with 1 letter")
-  .required("Secret key is required"),
-})
-
-const LoginPage: React.FC = () => {
-
-    const {isAuthenticated,isLoading}= useSelector((state: RootState) =>state.auth)
-    const dispatch =useAppDispatch();
-
+const LandingPage = () => {
+      const router = useRouter();
   
-useEffect(() => {
-  if (!isLoading && isAuthenticated) {
-    router.replace('/(tabs)'); 
-  }
-}, [isLoading, isAuthenticated, router]);
-
-if (isLoading) {
-  return (
-    <View style={styles.loaderContainer}>
-      <ActivityIndicator size="large" color="#fff" />
-    </View>
-  );
-}
+      const {isAuthenticated,isLoading}= useSelector((state: RootState) =>state.auth)
+  
+    console.log(isAuthenticated);
     
-    const handleLogin = async (values: { secretKey: string }) => {
-        try {
-            dispatch(loginAction(values.secretKey));
-            router.push("/(tabs)");
-        } catch (error) {
-          console.error("Login error:", error);
-        }
-      };
-      
-
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace('/(tabs)'); 
+    }
+  }, [isLoading, isAuthenticated, router]);
+  
+  if (isLoading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
   return (
-    <View style={styles.container}>
-      <Formik initialValues={{ secretKey: "" }} validationSchema={validationSchema} onSubmit={handleLogin}>
-        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-          <View style={styles.form}>
-            <Text style={styles.title}>Login</Text>
-            <Text style={styles.label}>Enter your secret key to login</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Secret Key"
-              secureTextEntry
-              value={values.secretKey}
-              onChangeText={handleChange("secretKey")}
-              onBlur={handleBlur("secretKey")}
-            />
-            {touched.secretKey && errors.secretKey && <Text style={styles.errorText}>{errors.secretKey}</Text>}
-            <TouchableOpacity style={styles.button} onPress={() => handleSubmit()}>
-              <Text style={styles.buttonText}>Login</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </Formik>
-    </View>
-  )
-}
+    <ImageBackground
+      source={{ uri: 'https://i.pinimg.com/736x/35/2a/0b/352a0bd393efeaff4693c0e3e855326a.jpg' }} 
+      style={styles.background}
+    >
+        <View style={styles.container}>
+          <Text style={styles.title}>Gestionnaire de Stock</Text>
+          <Text style={styles.description}>
+            Optimisez la gestion de votre stock avec une application intuitive, rapide et sécurisée.
+          </Text>
+          <TouchableOpacity style={styles.button} onPress={() => router.navigate("/auth/login")}>
+            <Icon name="log-in" type="feather" color="#fff" size={20} />
+            <Text style={styles.buttonText}>Connexion</Text>
+          </TouchableOpacity>
+        </View>
+    </ImageBackground>
+  );
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-  },
+  background: { flex: 1, justifyContent: 'center' },
   loaderContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#000" },
 
-  form: {
-    width: "100%",
-    maxWidth: 400,
-    padding: 20,
-  },
-  title: {
-    textAlign: "center",
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  label:
-    {
-       textAlign: "center",
-        marginBottom: 10,
-    },
-  input: {
-    width: "100%",
-    padding: 10,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-  },
+  overlay: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  container: { alignItems: 'center', paddingHorizontal: 20 },
+  title: { fontSize: 28, fontWeight: 'bold', color: '#fff', marginBottom: 10 },
+  description: { fontSize: 16, color: '#ddd', textAlign: 'center', marginBottom: 20 },
   button: {
-    width: "100%",
-    padding: 10,
-    backgroundColor: "black",
-    alignItems: "center",
-    borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#007AFF',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
   },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 10,
-  },
-})
+  buttonText: { color: '#fff', fontSize: 18, marginLeft: 10 },
+});
 
-export default LoginPage
-
+export default LandingPage;

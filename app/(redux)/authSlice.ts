@@ -21,8 +21,8 @@ export const loadUser = createAsyncThunk(
     "auth/loadUser",
     async ()=>{
         const warehouseman= await AsyncStorage.getItem("warehouseman");
-
-        return warehouseman? JSON.parse(warehouseman):null;
+           
+        return warehouseman ? JSON.parse(warehouseman):null;
     }
 )
 
@@ -62,6 +62,8 @@ const initialState: {
         })
         .addCase(logoutAction.fulfilled, (state)=>{
             state.warehouseman=null;
+            AsyncStorage.removeItem("warehouseman");
+
             state.isLoading=false;
             state.isAuthenticated=false;
         })
@@ -72,6 +74,8 @@ const initialState: {
             state.warehouseman=action.payload;
             state.isLoading=false;
             state.isAuthenticated=true;
+          
+          
         })
         .addCase(loadUser.rejected, (state)=>{
             state.isLoading=false;
