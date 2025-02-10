@@ -5,14 +5,34 @@ import * as Yup from "yup"
 
 const validationSchema = Yup.object().shape({
   secretKey: Yup.string()
-    .matches(/^[A-Za-z]{2}\d{6}$/, "Secret key must start with 2 letters followed by 6 numbers")
-    .required("Secret key is required"),
+  .matches(/^[A-Za-z]{2}\d{5}[A-Za-z]{1}$/, "Secret key must start with 2 letters, followed by 6 numbers, and end with 1 letter")
+  .required("Secret key is required"),
 })
 
 const LoginPage: React.FC = () => {
-  const handleLogin = (values: { secretKey: string }) => {
-    console.log("Secret Key:", values.secretKey)
-  }
+    const handleLogin = async (values: { secretKey: string }) => {
+        try {
+          const response = await fetch(
+            `${process.env.EXPO_PUBLIC_URL}/warehousemans?secretKey=${values.secretKey}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+      
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+      
+          const data = await response.json();
+          console.log("Secret Key:", data[0]);
+        } catch (error) {
+          console.error("Login error:", error);
+        }
+      };
+      
 
   return (
     <View style={styles.container}>
