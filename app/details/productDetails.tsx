@@ -13,7 +13,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '../(redux)/store';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { loadProduct } from '../(redux)/productsSlice';
+import { loadProduct, updateQuantity } from '../(redux)/productsSlice';
 
 
 const ProductDetails = () => {
@@ -27,6 +27,10 @@ const ProductDetails = () => {
       dispatch(loadProduct(productObject));
     }
   }, [dispatch]);
+
+  const handelUpdateQuantity = (type: 'add' | 'remove', stokId: number) => {
+    dispatch(updateQuantity({ type,productId:product?.id, stokId:stokId }));
+  };
 
   if (isLoadind) {
     return (
@@ -76,11 +80,11 @@ const ProductDetails = () => {
               </MapContainer> */}
 
               <View style={styles.stockControl}>
-                <TouchableOpacity style={styles.arrowDownButton}>
+                <TouchableOpacity style={styles.arrowDownButton} onPress={() => handelUpdateQuantity('remove', stock.id)}>
                   <AntDesign name="arrowdown" size={22} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.stockQuantity}>{stock.quantity}</Text>
-                <TouchableOpacity style={styles.arrowUpButton}>
+                <TouchableOpacity style={styles.arrowUpButton} onPress={() => handelUpdateQuantity('add', stock.id)}>
                   <AntDesign name="arrowup" size={22} color="#fff" />
                 </TouchableOpacity>
               </View>

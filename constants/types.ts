@@ -14,7 +14,7 @@ export type Statistics = {
     mostRemovedProducts:string[]
    }
 
-  export type stoke ={
+  export type stok ={
     id:number,
     name:string,
     quantity:number,
@@ -42,6 +42,6 @@ export type Statistics = {
         supplier: string;
         image: string;
         warehouseId: number;
-        stocks: stoke[];
+        stocks: stok[];
         editedBy: editedBy[];
        }
