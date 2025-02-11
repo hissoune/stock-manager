@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../(redux)/store';
 import { logoutAction } from '../(redux)/authSlice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useRouter } from 'expo-router';
+import { loadStatistics } from '../(redux)/statisticsSlice';
 
 interface Statistics {
     totalProducts: number;
@@ -16,30 +17,14 @@ interface Statistics {
 
 const StatisticsScreen: React.FC = () => {
     const router = useRouter();
-    const [stats, setStats] = useState<Statistics | null>(null);
     const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+    const { statistics ,isLoadind} = useSelector((state: RootState) => state.stats);
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        const fetchStatistics = async () => {
-            try {
-                const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/statistics`,
-                    {method:"GET",
-                    headers:{
-                        "Content-Type":"application/json",
-                    }
-                }
-                );
-                const data = await response.json();
-                setStats(data);
-            } catch (error) {
-                console.error('Error fetching statistics:', error);
-            }
-        };
+        dispatch(loadStatistics());
 
-        fetchStatistics();
-
-    }, []);
+    }, [dispatch]);
 
    
 
@@ -49,12 +34,19 @@ const StatisticsScreen: React.FC = () => {
        }
     
 
-    if (!stats) {
+    if (isLoadind) {
         return (
             <View style={styles.container}>
-                <Text style={styles.loadingText}>Loading statistics...</Text>
+        <ActivityIndicator size="large" color="#fff" />
             </View>
         );
+    }
+    if (!statistics) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.loadingText}>No data available</Text>
+            </View>
+        )
     }
 
     return (
@@ -63,22 +55,22 @@ const StatisticsScreen: React.FC = () => {
 
             <View style={styles.card}>
                 <Text style={styles.label}>Total Products:</Text>
-                <Text style={styles.value}>{stats.totalProducts}</Text>
+                <Text style={styles.value}>{statistics.totalProducts}</Text>
             </View>
 
             <View style={[styles.card, styles.warning]}>
                 <Text style={styles.label}>Out of Stock:</Text>
-                <Text style={styles.value}>{stats.outOfStock}</Text>
+                <Text style={styles.value}>{statistics.outOfStock}</Text>
             </View>
 
             <View style={styles.card}>
                 <Text style={styles.label}>Total Stock Value:</Text>
-                <Text style={styles.value}>${stats.totalStockValue}</Text>
+                <Text style={styles.value}>${statistics.totalStockValue}</Text>
             </View>
 
             <Text style={styles.subTitle}>🔥 Most Added Products:</Text>
-            {stats?.mostAddedProducts.length > 0 ? (
-                stats.mostAddedProducts.map((product, index) => (
+            {statistics?.mostAddedProducts.length > 0 ? (
+                statistics.mostAddedProducts.map((product, index) => (
                     <Text key={index} style={styles.listItem}>• {product}</Text>
                 ))
             ) : (
@@ -86,8 +78,8 @@ const StatisticsScreen: React.FC = () => {
             )}
 
             <Text style={styles.subTitle}>❌ Most Removed Products:</Text>
-            {stats?.mostRemovedProducts.length > 0 ? (
-                stats.mostRemovedProducts.map((product, index) => (
+            {statistics?.mostRemovedProducts.length > 0 ? (
+                statistics.mostRemovedProducts.map((product, index) => (
                     <Text key={index} style={styles.listItem}>• {product}</Text>
                 ))
             ) : (
