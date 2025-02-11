@@ -13,8 +13,8 @@ export const loadProducts = createAsyncThunk(
 
 export const updateQuantity =createAsyncThunk(
     "products/stoks/duantity",
-    async ({ type, productId, stokId }: { type: string; productId: string|undefined; stokId: number }) => {
-        const updatedProduct = await UpdateQuantity(type, productId, stokId);
+    async ({ type, productId, stokId,warehousemanId }: { type: string; productId: string|undefined; stokId: number,warehousemanId:number }) => {
+        const updatedProduct = await UpdateQuantity(type, productId, stokId,warehousemanId);
         return updatedProduct;
       
         
