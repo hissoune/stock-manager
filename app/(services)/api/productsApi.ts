@@ -13,7 +13,7 @@ export  const getProducts = async () => {
     const data = await response.json();
     return data;
 }
-   export const UpdateQuantity = async (type:string,productId:string|undefined,stokId:number)=>{
+   export const UpdateQuantity = async (type:string,productId:string|undefined,stokId:number,warehousemanId:number)=>{
 
             const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/products/${productId}`);
 
@@ -39,7 +39,7 @@ export  const getProducts = async () => {
              const updatedProduct = await fetch(`${process.env.EXPO_PUBLIC_URL}/products/${productId}`,{
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ stocks: updatedStocks })
+                body: JSON.stringify({ stocks: updatedStocks ,editedBy:{warehousemanId:warehousemanId,at:new Date().toISOString().split("T")[0]}})
              });
                 return updatedProduct.json();
    }
