@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../(redux)/store';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { loadProduct, updateQuantity } from '../(redux)/productsSlice';
+import MyMap from '@/components/GeoMap';
 
 
 const ProductDetails = () => {
@@ -63,22 +64,8 @@ const ProductDetails = () => {
           product.stocks.map((stock, index) => (
             <View key={index} style={styles.stockItem}>
               <Text style={styles.stockLocation}>{stock.name}</Text>
-              <Text style={styles.stockLocation}>{stock.localisation.city}</Text>
              
-              {/* <MapContainer style={styles.map}>
-                <TileLayer
-                  url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
-                />
-                <Marker
-                  position={[
-                    stock.localisation.latitude,
-                    stock.localisation.longitude,
-                  ]}
-                >
-                  <Popup>{stock.name}</Popup>
-                </Marker>
-              </MapContainer> */}
+             <MyMap latitude={stock.localisation.latitude} longitude={stock.localisation.longitude} />
 
               <View style={styles.stockControl}>
                 <TouchableOpacity style={styles.arrowDownButton} onPress={() => handelUpdateQuantity('remove', stock.id)}>
@@ -102,7 +89,7 @@ const ProductDetails = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 30,
+    padding: 25,
     backgroundColor: '#ffffff',
     alignItems: 'center',
   },
@@ -127,7 +114,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   productImage: {
-    width: 300,
+    width: 330,
     height: 300,
     borderRadius: 15,
     marginBottom: 25,
@@ -168,9 +155,9 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: 18,
     paddingHorizontal: 25,
-    borderRadius: 12,
+    borderRadius: 32,
     backgroundColor: '#f9f9f9',
-    marginTop: 10,
+    marginTop: 30,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
