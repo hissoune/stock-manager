@@ -37,11 +37,11 @@ export default function TabLayout() {
         name="products"
         options={{
           title: 'Products',
-          tabBarIcon: ({ color }) => <MaterialIcons name="production-quantity-limits" size={24} color="#fff" />,
+          tabBarIcon: ({ color }) => <MaterialIcons name="production-quantity-limits" size={24} color={color} />,
         }}
       />
       
-      
+
     
     </Tabs>
   );
