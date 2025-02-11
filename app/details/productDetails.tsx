@@ -21,6 +21,7 @@ const ProductDetails = () => {
   const { productData } = useLocalSearchParams();
   const productObject = productData ? JSON.parse(decodeURIComponent(productData as string)) : null;
   const { product, isLoadind } = useSelector((state: RootState) => state.products);
+    const { warehouseman } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     if (!product || product.id !== productObject.id) {
@@ -29,7 +30,7 @@ const ProductDetails = () => {
   }, [dispatch]);
 
   const handelUpdateQuantity = (type: 'add' | 'remove', stokId: number) => {
-    dispatch(updateQuantity({ type,productId:product?.id, stokId:stokId }));
+    dispatch(updateQuantity({ type,productId:product?.id, stokId:stokId ,warehousemanId:parseInt(warehouseman?.id as string)}));
   };
 
   if (isLoadind) {
