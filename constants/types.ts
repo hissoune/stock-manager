@@ -6,3 +6,11 @@ export type Warehouseman = {
     warehouseId:number
 }
 
+export type Statistics = {
+    totalProducts:number,
+    outOfStock:number,
+    totalStockValue:number,
+    mostAddedProducts:string[],
+    mostRemovedProducts:string[]
+   }
+
