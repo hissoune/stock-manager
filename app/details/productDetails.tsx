@@ -64,12 +64,12 @@ const ProductDetails = () => {
         <Text style={styles.productType}>{product.type}</Text>
 
         <View style={styles.editorContainer}>
-        <Image source={{ uri: lastEditer?.image || "https://via.placeholder.com/100" }} style={styles.editorImage} />
+        <Image source={{ uri: lastEditer?.image || "https://i.pinimg.com/736x/8e/4e/c8/8e4ec81bac67ae771b557e76eae29a95.jpg" }} style={styles.editorImage} />
         <View style={styles.editorInfo}>
             <Text style={styles.editorName}>{lastEditer?.name || "Unknown Editor"}</Text>
-            <Text style={styles.editorLabel}>Last Updated</Text>
+            <Text style={styles.editorLabel}>Last Updated :  {product?.editedBy[0]?.at.toLocaleString()}</Text>
         </View>
-        {/* <Image source={require("@/assets/brand-logo.png")} style={styles.brandBackground} /> */}
+        <Image source={{ uri:"https://via.placeholder.com/100" }} style={styles.brandBackground} />
         </View>
 
 
