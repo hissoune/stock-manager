@@ -1,7 +1,8 @@
 export type Warehouseman = {
     id:string,
     name:string,
-    dob:string
+    dob:string,
+    image:string
     secretKey:string
     warehouseId:number
 }

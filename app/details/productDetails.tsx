@@ -13,7 +13,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '../(redux)/store';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { loadProduct, updateQuantity } from '../(redux)/productsSlice';
+import { displayEditedByAction, loadProduct, updateQuantity } from '../(redux)/productsSlice';
 import MyMap from '@/components/GeoMap';
 
 
@@ -22,11 +22,15 @@ const ProductDetails = () => {
   const { productData } = useLocalSearchParams();
   const productObject = productData ? JSON.parse(decodeURIComponent(productData as string)) : null;
   const { product, isLoadind } = useSelector((state: RootState) => state.products);
+  const { lastEditer } = useSelector((state: RootState) => state.products);
     const { warehouseman } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     if (!product || product.id !== productObject.id) {
       dispatch(loadProduct(productObject));
+      if (product?.id) {
+        dispatch(displayEditedByAction(product.id));
+      }
     }
   }, [dispatch]);
 
@@ -58,6 +62,16 @@ const ProductDetails = () => {
         <Image source={{ uri: product.image }} style={styles.productImage} />
         <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
         <Text style={styles.productType}>{product.type}</Text>
+
+        <View style={styles.editorContainer}>
+        <Image source={{ uri: lastEditer?.image || "https://via.placeholder.com/100" }} style={styles.editorImage} />
+        <View style={styles.editorInfo}>
+            <Text style={styles.editorName}>{lastEditer?.name || "Unknown Editor"}</Text>
+            <Text style={styles.editorLabel}>Last Updated</Text>
+        </View>
+        {/* <Image source={require("@/assets/brand-logo.png")} style={styles.brandBackground} /> */}
+        </View>
+
 
         <Text style={styles.stockTitle}>Stock Availability:</Text>
         {product.stocks.length > 0 ? (
@@ -222,6 +236,48 @@ const styles = StyleSheet.create({
     height: 200,
     marginTop: 15,
   },
+  editorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 12,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 5,
+    marginTop: 30,
+    position: "relative",
+    overflow: "hidden",
+  },
+  editorImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 12,
+  },
+  editorInfo: {
+    flex: 1,
+  },
+  editorName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  editorLabel: {
+    fontSize: 14,
+    color: "#888",
+  },
+  brandBackground: {
+    position: "absolute",
+    right: -30,
+    bottom: -10,
+    width: 100,
+    height: 100,
+    opacity: 0.1,
+  },
+  
 });
 
 export default ProductDetails;
