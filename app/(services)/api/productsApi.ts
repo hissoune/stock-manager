@@ -1,4 +1,4 @@
-import { stok } from '../../../constants/types';
+import { Product, stok } from '../../../constants/types';
 
 
 export  const getProducts = async () => {
@@ -89,3 +89,28 @@ export  const getProducts = async () => {
 
     return Array.from(uniqueStocks.values());
 };
+
+
+
+export const createProduct = async (product: Product) => {
+    try {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/products`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(product),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to create product: ${response.statusText}`);
+      }
+  
+      const data = await response.json(); 
+      return data; 
+    } catch (error) {
+      console.error("Error creating product:", error);
+      throw error; 
+    }
+  };
+  

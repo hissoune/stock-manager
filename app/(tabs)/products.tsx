@@ -63,9 +63,9 @@ const Products = () => {
             <Image source={{ uri: item.image }} style={styles.productImage} />
             <View style={styles.productDetails}>
               <Text style={styles.productName}>{item.name}</Text>
-              <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
-              <Text style={[ item.stocks.length > 0 ? styles.productInStock : styles.productOutOfStock]}>
-                {item.stocks.length > 0 ? 'In Stock' : 'Out of Stock'}
+        <Text style={styles.productPrice}>${parseFloat(item.price).toFixed(3)}</Text>
+              <Text style={[ item.stocks?.length > 0 ? styles.productInStock : styles.productOutOfStock]}>
+                {item.stocks?.length > 0 ? 'In Stock' : 'Out of Stock'}
               </Text>
             </View>
           </TouchableOpacity>

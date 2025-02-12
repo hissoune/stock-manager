@@ -6,7 +6,7 @@ import { Colors } from '@/constants/Colors';
 export default function TabBarBackground() {
   const colorScheme = useColorScheme();
 
-  return <View style={[styles.container, { backgroundColor: 'black' }]} />;
+  return <View style={[styles.container, { backgroundColor: '#FF9900' }]} />;
 }
 
 const styles = StyleSheet.create({

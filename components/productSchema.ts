@@ -26,7 +26,7 @@ const productSchema = yup.object().shape({
     .max(yup.ref('price'), 'Solde price cannot be greater than the original price')
     .nullable(),
   supplier: yup.string().required('Supplier name is required'),
-  image: yup.string().url('Invalid image URL').required('Image URL is required'),
+  image: yup.string().required('Image URL is required'),
   stocks: yup.array().of(stockSchema),
 });
 

@@ -60,7 +60,7 @@ const ProductDetails = () => {
       <View style={styles.container}>
         <Text style={styles.productName}>{product.name}</Text>
         <Image source={{ uri: product.image }} style={styles.productImage} />
-        <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
+        <Text style={styles.productPrice}>${parseFloat(product.price).toFixed(3)}</Text>
         <Text style={styles.productType}>{product.type}</Text>
 
         <View style={styles.editorContainer}>
