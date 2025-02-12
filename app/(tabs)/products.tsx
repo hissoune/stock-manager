@@ -1,5 +1,5 @@
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -13,8 +13,11 @@ import { loadProducts } from '../(redux)/productsSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '../(redux)/store';
 import { useRouter } from 'expo-router';
+import ProductCreation from '../details/productCreation';
 
 const Products = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { products, isLoadind } = useSelector((state: RootState) => state.products);
@@ -36,9 +39,13 @@ const Products = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Available Products</Text>
 
-      <TouchableOpacity style={styles.addButton} >
+      <TouchableOpacity 
+              style={styles.addButton} 
+              onPress={() => setIsModalVisible(true)}
+            >
         <Text style={styles.addButtonText}>+ Add New Product</Text>
       </TouchableOpacity>
+      <ProductCreation visible={isModalVisible} onClose={() => setIsModalVisible(false)} />
 
       <View style={styles.filterContainer}>
         <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText}>Quantity</Text></TouchableOpacity>
