@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { displayEditedBy, getProducts, UpdateQuantity } from "../(services)/api/productsApi";
-import {  Product, Warehouseman } from "@/constants/types";
+import { displayEditedBy, getProducts, getStocks, UpdateQuantity } from "../(services)/api/productsApi";
+import {  Product, stok, Warehouseman } from "@/constants/types";
 
 
 export const loadProducts = createAsyncThunk(
@@ -30,17 +30,27 @@ export const displayEditedByAction = createAsyncThunk(
 
 );
 
+export const getStocksAction = createAsyncThunk(
+    "products/stokes",
+    async ()=>{
+        const stoks = await getStocks();
+        return stoks
+    }
+);
+
 
 const intialState :{
     products:Product[] | null;
     product:Product | null;
     lastEditer:Warehouseman | null ,
+    stoks:stok[];
     isLoadind:boolean;
     error:string | null;
 }={
     products:[],
     product:null,
     lastEditer:null,
+    stoks:[],
     isLoadind:false,
     error:null,
 }
@@ -80,11 +90,22 @@ const productSlice = createSlice({
             state.isLoadind = true
         })
         .addCase(displayEditedByAction.fulfilled,(state,action)=>{
-            state.isLoadind = false;
+           
             state.lastEditer =action.payload;
+            state.isLoadind = false;
         })
         .addCase(displayEditedByAction.rejected, (state)=>{
             state.error = "last editor jjj ?????"
+        })
+        .addCase(getStocksAction.pending, (state)=>{
+            state.isLoadind = true
+        })
+        .addCase(getStocksAction.fulfilled, (state,action)=>{
+            state.isLoadind = false ,
+            state.stoks = action.payload
+        })
+        .addCase(getStocksAction.rejected, (state)=>{
+            state.error = 'okay §§ hh'
         })
     },
 })
