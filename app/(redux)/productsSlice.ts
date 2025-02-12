@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { getProducts, UpdateQuantity } from "../(services)/api/productsApi";
-import { Product } from "@/constants/types";
+import { displayEditedBy, getProducts, UpdateQuantity } from "../(services)/api/productsApi";
+import {  Product, Warehouseman } from "@/constants/types";
 
 
 export const loadProducts = createAsyncThunk(
@@ -21,14 +21,26 @@ export const updateQuantity =createAsyncThunk(
     }
 );
 
+export const displayEditedByAction = createAsyncThunk(
+    "products/warehouseman",
+    async (productId:string)=>{
+        const warehouseMan = await displayEditedBy(productId);
+        return warehouseMan;
+    }
+
+);
+
+
 const intialState :{
     products:Product[] | null;
     product:Product | null;
+    lastEditer:Warehouseman | null ,
     isLoadind:boolean;
     error:string | null;
 }={
     products:[],
     product:null,
+    lastEditer:null,
     isLoadind:false,
     error:null,
 }
@@ -63,6 +75,16 @@ const productSlice = createSlice({
         })
         .addCase(updateQuantity.rejected, (state)=>{
             state.error = "error while updating the stoke "
+        })
+        .addCase(displayEditedByAction.pending, (state)=>{
+            state.isLoadind = true
+        })
+        .addCase(displayEditedByAction.fulfilled,(state,action)=>{
+            state.isLoadind = false;
+            state.lastEditer =action.payload;
+        })
+        .addCase(displayEditedByAction.rejected, (state)=>{
+            state.error = "last editor jjj ?????"
         })
     },
 })
