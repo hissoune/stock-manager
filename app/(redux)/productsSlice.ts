@@ -34,6 +34,7 @@ export const getStocksAction = createAsyncThunk(
     "products/stokes",
     async ()=>{
         const stoks = await getStocks();
+        
         return stoks
     }
 );
@@ -87,7 +88,7 @@ const productSlice = createSlice({
             state.error = "error while updating the stoke "
         })
         .addCase(displayEditedByAction.pending, (state)=>{
-            state.isLoadind = true
+            state.isLoadind = false
         })
         .addCase(displayEditedByAction.fulfilled,(state,action)=>{
            

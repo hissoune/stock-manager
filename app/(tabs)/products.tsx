@@ -9,11 +9,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { loadProducts } from '../(redux)/productsSlice';
+import { getStocksAction, loadProducts } from '../(redux)/productsSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '../(redux)/store';
 import { useRouter } from 'expo-router';
-import ProductCreation from '../details/productCreation';
+import ProductCreation from '../../components/productCreation';
 
 const Products = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -21,9 +21,11 @@ const Products = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { products, isLoadind } = useSelector((state: RootState) => state.products);
+  const { stoks } = useSelector((state: RootState) => state.products);
 
   useEffect(() => {
     dispatch(loadProducts());
+    dispatch(getStocksAction());
   }, [dispatch]);
 
   if (isLoadind) {
@@ -45,7 +47,7 @@ const Products = () => {
             >
         <Text style={styles.addButtonText}>+ Add New Product</Text>
       </TouchableOpacity>
-      <ProductCreation visible={isModalVisible} onClose={() => setIsModalVisible(false)} />
+      <ProductCreation visible={isModalVisible} onClose={() => setIsModalVisible(false)} stoks={stoks} />
 
       <View style={styles.filterContainer}>
         <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText}>Quantity</Text></TouchableOpacity>

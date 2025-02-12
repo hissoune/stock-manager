@@ -71,14 +71,15 @@ export  const getProducts = async () => {
     });
 
     const data = await response.json();
-
-    if (!data || !data.products) {
+  
+  
+    if (!data ) {
         throw new Error("No products found");
     }
 
     const uniqueStocks = new Map();
 
-    data.products.forEach((product: { stocks: stok[] }) => {
+    data.forEach((product: { stocks: stok[] }) => {
         product.stocks.forEach((stock) => {
             if (!uniqueStocks.has(stock.id)) {
                 uniqueStocks.set(stock.id, stock);

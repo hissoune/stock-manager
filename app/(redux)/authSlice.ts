@@ -50,7 +50,7 @@ const initialState: {
         })
         .addCase(loginAction.fulfilled, (state, action)=>{
             state.warehouseman=action.payload;
-            AsyncStorage.setItem("warehouseman", action.payload)
+            AsyncStorage.setItem("warehouseman",JSON.stringify(action.payload))
             state.isLoading=false;
             state.isAuthenticated=true;
         })
