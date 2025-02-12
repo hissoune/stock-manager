@@ -10,17 +10,29 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import MultiSelect from "react-native-multiple-select"
 import type { stok } from "../constants/types"
 import React from "react"
 import productSchema from "./productSchema"
+import * as ImagePicker from 'expo-image-picker';
+import { useAppDispatch } from "@/hooks/useAppDispatch"
+import { createProductAction } from "@/app/(redux)/productsSlice"
+import { useSelector } from "react-redux"
+import { RootState } from "@/app/(redux)/store"
+import { editedBy } from '../constants/types';
+
 
 const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClose: any; stoks: stok[] }) => {
   const [errors, setErrors] = useState<any>({})
+  const [scanning, setScanning] = useState(false); 
+  const dispatch = useAppDispatch();
+  const { warehouseman } = useSelector((state: RootState) => state.auth);
 
   const [product, setProduct] = useState<{
+    id:string
     name: string
     type: string
     barcode: string
@@ -28,16 +40,19 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
     solde: string
     supplier: string
     image: string
-    stoks: stok[]
+    stocks: stok[],
+    editedBy: editedBy[]
   }>({
-    name: "",
-    type: "",
-    barcode: "",
-    price: "",
-    solde: "",
-    supplier: "",
+    id:(Math.random() * 255).toString(),
+    name: "Laptop HP Pavilion",
+    type: "Informatique",
+    barcode: "1234567890123",
+    price: "1200",
+    solde: "124",
+    supplier: "HP",
     image: "",
-    stoks: [],
+    stocks: [],
+    editedBy: [{warehousemanId:parseInt(warehouseman?.id as string), at: new Date()}]
   })
 
   const handleChange = (key: keyof typeof product, value: string) => {
@@ -46,15 +61,38 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
 
   const handleStockSelection = (selectedItems: number[]) => {
     const selectedStoks = stoks.filter((stok) => selectedItems.includes(stok.id))
-    setProduct({ ...product, stoks: selectedStoks })
-  }
+    .map((stok) => ({ ...stok, quantity: 1 }));
+    setProduct({ ...product, stocks: selectedStoks })
+  };
+
+  const handleImagePick = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert('Permission denied. You need to grant permission to access the media library.');
+      return;
+    }
+  
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+     mediaTypes: ['images'], 
+      allowsEditing: true, 
+      quality: 0.5, 
+    });
+  
+    if (!pickerResult.canceled && pickerResult.assets && pickerResult.assets.length > 0) {
+      const imageUri = pickerResult.assets[0].uri;
+
+      setProduct({ ...product, image: imageUri });
+    } else {
+      alert('No image selected. Please try again.');
+    }
+  };
 
   const handleSubmit = () => {
     productSchema
       .validate(product, { abortEarly: false })
       .then(() => {
+        dispatch(createProductAction(product))
         console.log("Product Added:", product)
-        onClose() 
       })
       .catch((err) => {
         const validationErrors: { [key: string]: string } = {}
@@ -62,12 +100,13 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
           validationErrors[error.path] = error.message
         })
         setErrors(validationErrors)
+      }).finally(() => {onClose() 
       })
-    onClose()
   }
 
   const renderItem = ({ item }: { item: { label: string; value: any } }) => (
-    <TextInput
+    <View>
+ <TextInput
       style={styles.input}
       placeholder={item.label}
       placeholderTextColor="#888"
@@ -75,6 +114,10 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
       onChangeText={(text) => handleChange(item.value, text)}
       keyboardType={item.value === "price" || item.value === "solde" ? "numeric" : "default"}
     />
+    {errors[item.value] && <Text style={styles.errorText}>{errors[item.value]}</Text>}
+    </View>
+   
+
   )
 
   const formFields = [
@@ -84,7 +127,6 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
     { label: "Price", value: "price" },
     { label: "Solde", value: "solde" },
     { label: "Supplier", value: "supplier" },
-    { label: "Image URL", value: "image" },
   ]
 
   return (
@@ -109,7 +151,7 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
                         items={stoks}
                         uniqueKey="id"
                         onSelectedItemsChange={handleStockSelection}
-                        selectedItems={product.stoks.map((s) => s.id)}
+                        selectedItems={product.stocks.map((s) => s.id)}
                         selectText="Select Stocks"
                         searchInputPlaceholderText="Search Stocks..."
                         onChangeInput={(text) => console.log(text)}
@@ -138,15 +180,27 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
                   ) : (
                     <Text style={styles.noStocksText}>No Stocks Available</Text>
                   )}
+                  <TouchableOpacity style={styles.imageButton} onPress={handleImagePick}>
+                    <Text style={styles.imageButtonText}>Add Image</Text>
+                  </TouchableOpacity>
+
+                  {product.image ? (
+                    <Image source={{ uri: product.image }} style={styles.imagePreview} />
+                  ) : (
+                    <Text style={styles.noImageText}>No image selected</Text>
+                  )}
                 </>
               )}
+              
             />
+            
             <TouchableOpacity style={styles.addButton} onPress={handleSubmit}>
               <Text style={styles.addButtonText}>Add Product</Text>
             </TouchableOpacity>
           </View>
         </SafeAreaView>
       </KeyboardAvoidingView>
+
     </Modal>
   )
 }
@@ -232,6 +286,31 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: "hidden",
   },
+  imageButton: {
+    marginTop: 20,
+    backgroundColor: "#FF9900",
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  imageButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  imagePreview: {
+    width: 200,
+    height: 200,
+    marginTop: 10,
+    alignSelf: "center",
+    borderRadius: 10,
+  },
+  noImageText: {
+    fontSize: 16,
+    color: "#888",
+    textAlign: "center",
+    marginTop: 10,
+  },
   noStocksText: {
     fontSize: 16,
     color: "#888",
@@ -248,6 +327,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#fff",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginTop: 5,
   },
 })
 
