@@ -38,11 +38,10 @@ export type Statistics = {
         name: string;
         type: string;
         barcode: string;
-        price: number;
-        solde: number;
+        price: string;
+        solde: string;
         supplier: string;
         image: string;
-        warehouseId: number;
         stocks: stok[];
         editedBy: editedBy[];
        }
