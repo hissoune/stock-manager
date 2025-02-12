@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import {
   ActivityIndicator,
   Image,
