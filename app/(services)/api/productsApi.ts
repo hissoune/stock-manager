@@ -55,8 +55,36 @@ export  const getProducts = async () => {
                 throw new Error('product ?????')
             }
 
-            const warehouseMan = (await fetch(`${process.env.EXPO_PUBLIC_URL}/warehousemans/${product.editedBy.warehousemanId}`)).json();
+            const warehouseMan = (await fetch(`${process.env.EXPO_PUBLIC_URL}/warehousemans/${product.editedBy[0].warehousemanId}`)).json();
 
             return warehouseMan;
 
    }
+
+
+   export const getStocks = async () => {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/products`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        }
+    });
+
+    const data = await response.json();
+
+    if (!data || !data.products) {
+        throw new Error("No products found");
+    }
+
+    const uniqueStocks = new Map();
+
+    data.products.forEach((product: { stocks: stok[] }) => {
+        product.stocks.forEach((stock) => {
+            if (!uniqueStocks.has(stock.id)) {
+                uniqueStocks.set(stock.id, stock);
+            }
+        });
+    });
+
+    return Array.from(uniqueStocks.values());
+};
