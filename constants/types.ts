@@ -41,7 +41,7 @@ export type Statistics = {
         price: string;
         solde: string;
         supplier: string;
-        image: string;
+        image: string | null ;
         stocks: stok[];
         editedBy: editedBy[];
        }
