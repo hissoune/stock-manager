@@ -23,6 +23,7 @@ import { createProductAction } from "@/app/(redux)/productsSlice"
 import { useSelector } from "react-redux"
 import { RootState } from "@/app/(redux)/store"
 import { editedBy } from '../constants/types';
+import { uploadImageToBackend } from "@/app/helpers/minio.helper"
 
 
 const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClose: any; stoks: stok[] }) => {
@@ -39,7 +40,7 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
     price: string
     solde: string
     supplier: string
-    image: string
+    image: string | null 
     stocks: stok[],
     editedBy: editedBy[]
   }>({
@@ -65,6 +66,8 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
     setProduct({ ...product, stocks: selectedStoks })
   };
 
+
+  
   const handleImagePick = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
@@ -73,19 +76,24 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
     }
   
     const pickerResult = await ImagePicker.launchImageLibraryAsync({
-     mediaTypes: ['images'], 
+      mediaTypes: ['images'], 
       allowsEditing: true, 
       quality: 0.5, 
     });
   
     if (!pickerResult.canceled && pickerResult.assets && pickerResult.assets.length > 0) {
-      const imageUri = pickerResult.assets[0].uri;
-
-      setProduct({ ...product, image: imageUri });
+      const imageUri = await uploadImageToBackend(pickerResult.assets[0].uri);
+      console.log("Image URI after upload:", imageUri); 
+      if (imageUri) {
+        setProduct({ ...product, image: imageUri });
+      } else {
+        alert('Image upload failed. Please try again.');
+      }
     } else {
       alert('No image selected. Please try again.');
     }
   };
+  
 
   const handleSubmit = () => {
     productSchema
