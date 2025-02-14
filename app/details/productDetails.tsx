@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -9,13 +9,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '../(redux)/store';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { displayEditedByAction, loadProduct, updateQuantity } from '../(redux)/productsSlice';
+import { displayEditedByAction, getStocksAction, loadProduct, updateQuantity } from '../(redux)/productsSlice';
 import MyMap from '@/components/GeoMap';
 import { replaceIp } from '../helpers/replaceIp';
+import ProductUpdate from '@/components/productUpdate';
 
 
 const ProductDetails = () => {
@@ -25,10 +26,13 @@ const ProductDetails = () => {
   const { product, isLoadind } = useSelector((state: RootState) => state.products);
   const { lastEditer } = useSelector((state: RootState) => state.products);
   const { warehouseman } = useSelector((state: RootState) => state.auth);
+  const { stoks } = useSelector((state: RootState) => state.products);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     if (!product || product.id !== productObject?.id) {
       dispatch(loadProduct(productObject));
+       dispatch(getStocksAction());
       if (product?.id) {
         dispatch(displayEditedByAction(product.id));
       }
@@ -62,6 +66,11 @@ const ProductDetails = () => {
         <Text style={styles.productName}>{product.name}</Text>
         <Image source={{ uri: replaceIp(product.image || "", process.env.EXPO_PUBLIC_REPLACE || "") }}
          style={styles.productImage} />
+          <TouchableOpacity style={styles.addButton}  onPress={() => setIsModalVisible(true)} >
+          <MaterialCommunityIcons name="folder-edit-outline" size={40} color="#FF9900" />
+          </TouchableOpacity>
+          <ProductUpdate visible={isModalVisible} onClose={() => setIsModalVisible(false)} stoks={stoks} product={product} />
+
         <Text style={styles.productPrice}>${parseFloat(product.price).toFixed(3)}</Text>
         <Text style={styles.productType}>{product.type}</Text>
 
@@ -97,6 +106,7 @@ const ProductDetails = () => {
         ) : (
           <Text style={styles.outOfStock}>Out of Stock</Text>
         )}
+         
       </View>
     </ScrollView>
   );
@@ -145,7 +155,7 @@ const styles = StyleSheet.create({
   productName: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#FF9900',
     textAlign: 'center',
     marginBottom: 40,
   },
@@ -278,6 +288,19 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     opacity: 0.1,
+  },
+  addButton: {
+    width: 230,
+    backgroundColor: '#fff',
+    padding: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#FF9900',
+    alignItems: 'center',
+    marginBottom: 15,
+    marginTop: 20,
+    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+
   },
   
 });
