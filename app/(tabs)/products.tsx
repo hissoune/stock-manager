@@ -17,7 +17,7 @@ import { RootState } from '../(redux)/store';
 import { useRouter } from 'expo-router';
 import ProductCreation from '../../components/productCreation';
 import { replaceIp } from '../helpers/replaceIp';
-import {  Ionicons } from '@expo/vector-icons';
+import {  Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import CameraScanner from '@/components/CameraScanner';
 
 const Products = () => {
@@ -71,7 +71,8 @@ const Products = () => {
               style={styles.addButton} 
               onPress={() => setIsModalVisible(true)}
             >
-        <Text style={styles.addButtonText}>+ Add New Product</Text>
+              <MaterialCommunityIcons name="new-box" size={40} color="#FF9900" />
+        {/* <Text style={styles.addButtonText}>+ Add New Product</Text> */}
       </TouchableOpacity>
       <ProductCreation visible={isModalVisible} onClose={() => setIsModalVisible(false)} stoks={stoks} />
        
@@ -142,9 +143,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   addButton: {
-    backgroundColor: '#FF9900',
-    padding: 12,
+    backgroundColor: '#fff',
+    padding: 5,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#FF9900',
     alignItems: 'center',
     marginBottom: 15,
   },
