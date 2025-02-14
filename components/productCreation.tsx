@@ -1,4 +1,3 @@
-"use client"
 
 import { useState, useEffect } from "react"
 import {
@@ -15,9 +14,8 @@ import {
   Image,
   ScrollView,
 } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
+import { Feather, Ionicons, MaterialIcons } from "@expo/vector-icons"
 import MultiSelect from "react-native-multiple-select"
-import { Camera, CameraType, CameraView } from "expo-camera"
 import * as ImagePicker from "expo-image-picker"
 import type { stok } from "../constants/types"
 import productSchema from "./productSchema"
@@ -29,15 +27,13 @@ import type { editedBy } from "../constants/types"
 import { uploadImageToBackend } from "@/app/helpers/minio.helper"
 import { replaceIp } from "@/app/helpers/replaceIp"
 import React from "react"
+import CameraScanner from "./CameraScanner"
 
 const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClose: any; stoks: stok[] }) => {
   const [errors, setErrors] = useState<any>({})
   const [showAddStock, setShowAddStock] = useState(false)
   const [showScanner, setShowScanner] = useState(false)
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null)
-  const [scanned, setScanned] = useState(false)
-  // Remove this line
-  // const cameraRef = useRef<Camera | null>(null)
+
   const dispatch = useAppDispatch()
   const { warehouseman } = useSelector((state: RootState) => state.auth)
 
@@ -76,14 +72,8 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
     },
   })
 
-  const [cameraType, setCameraType] = useState<CameraType>('back');
 
-  useEffect(() => {
-    ;(async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync()
-      setHasPermission(status === "granted")
-    })()
-  }, [])
+  
 
   const handleChange = (key: keyof typeof product, value: string) => {
     setProduct({ ...product, [key]: value })
@@ -93,8 +83,10 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
     const selectedStoks = stoks
       .filter((stok) => selectedItems.includes(stok.id))
       .map((stok) => ({ ...stok, quantity: 1 }))
-    setProduct({ ...product, stocks: selectedStoks })
-  }
+      setProduct({
+        ...product,
+        stocks: [...product.stocks, ...selectedStoks],
+      })  }
 
   const handleImagePick = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -171,16 +163,12 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
   }
 
   const handleBarCodeScanned = ({ type, data }: { type: string; data: string }) => {
-    setScanned(true)
+  
     setProduct({ ...product, barcode: data })
     setShowScanner(false)
-    // Reset scanned state after a short delay
-    setTimeout(() => setScanned(false), 1000)
   }
 
-  const toggleCameraFacing = () => {
-    setCameraType((prevCameraType) => (prevCameraType === ImagePicker.CameraType.back ? ImagePicker.CameraType.front : ImagePicker.CameraType.back));
-  }
+
 
   const renderItem = ({ item }: { item: { label: string; value: any } }) => (
     <View style={styles.inputContainer}>
@@ -205,12 +193,7 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
     { label: "Supplier", value: "supplier" },
   ]
 
-  if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>
-  }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>
-  }
+  
 
   return (
     <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
@@ -238,7 +221,7 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
                       onChangeText={(text) => handleChange("barcode", text)}
                     />
                     <TouchableOpacity style={styles.scanButton} onPress={() => setShowScanner(true)}>
-                      <Ionicons name="barcode-outline" size={24} color="#ffffff" />
+                      <Ionicons name="barcode-outline" size={40} color="#FF9900" />
                     </TouchableOpacity>
                   </View>
                   {errors.barcode && <Text style={styles.errorText}>{errors.barcode}</Text>}
@@ -256,7 +239,6 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
                         selectedItems={product.stocks.map((s) => s.id)}
                         selectText="Select Stocks"
                         searchInputPlaceholderText="Search Stocks..."
-                        onChangeInput={(text) => console.log(text)}
                         tagRemoveIconColor="#FF9900"
                         tagBorderColor="#FF9900"
                         tagTextColor="#000"
@@ -283,10 +265,11 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
                     <Text style={styles.noStocksText}>No Stocks Available</Text>
                   )}
                   <TouchableOpacity style={styles.addStockButton} onPress={handleAddNewStock}>
-                    <Text style={styles.buttonText}>Add New Stock</Text>
+                    {/* <Text style={styles.buttonText}>Add New Stock</Text> */}
+                    <MaterialIcons name="new-label" size={40} color="#FF9900" />
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.imageButton} onPress={handleImagePick}>
-                    <Text style={styles.buttonText}>Add Image</Text>
+                    <Feather name="upload-cloud" size={40} color="#FF9900" />
                   </TouchableOpacity>
 
                   {product.image ? (
@@ -360,32 +343,8 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
         </SafeAreaView>
       </KeyboardAvoidingView>
       {showScanner && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={showScanner}
-          onRequestClose={() => setShowScanner(false)}
-        >
-          <View style={styles.scannerContainer}>
-          <CameraView 
-              style={styles.cameraview} 
-              facing={cameraType} 
-              onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-            >
-              {/* <View style={styles.cameraoverlay}>
-                <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}>
-                  <Text style={styles.flipText}>Flip Camera</Text>
-                </TouchableOpacity>
-              </View> */}
-            </CameraView>
-            <View style={styles.scannerOverlay}>
-              <View style={styles.scannerMarker} />
-            </View>
-            <TouchableOpacity style={styles.closeScannerButton} onPress={() => setShowScanner(false)}>
-              <Ionicons name="close" size={24} color="#ffffff" />
-            </TouchableOpacity>
-          </View>
-        </Modal>
+               <CameraScanner showScanner={showScanner} setShowScanner={setShowScanner} handleBarCodeScanned={handleBarCodeScanned}/>
+
       )}
     </Modal>
   )
@@ -396,6 +355,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "flex-end",
+    paddingTop: 20,
   },
   safeArea: {
     flex: 1,
@@ -405,9 +365,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    paddingHorizontal: 20,
+    paddingHorizontal: 25,
     paddingTop: 20,
-    paddingBottom: 30,
+    paddingBottom: 300,
     height: "90%",
   },
   closeButton: {
@@ -456,13 +416,16 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   multiSelectDropdown: {
-    borderColor: "#ddd",
+    borderColor: "#FF9900",
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
+    paddingRight: 20
   },
   multiSelectIndicator: {
-    backgroundColor: "#FF9900",
+    backgroundColor: "#fff",
+    color: "#FF9900",
+
   },
   multiSelectItemsContainer: {
     maxHeight: 150,
@@ -489,9 +452,12 @@ const styles = StyleSheet.create({
   },
   imageButton: {
     marginTop: 20,
-    backgroundColor: "#FF9900",
+    backgroundColor: "#fff",
     paddingVertical: 15,
+    borderColor: "#FF9900",
+    borderWidth: 1,
     borderRadius: 10,
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)",
     alignItems: "center",
   },
   buttonText: {
@@ -523,7 +489,8 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 50,
+    marginBottom: 150,
   },
   errorText: {
     color: "red",
@@ -531,11 +498,14 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   addStockButton: {
-    backgroundColor: "#4CAF50",
+    marginTop: 20,
+    backgroundColor: "#fff",
     paddingVertical: 15,
+    borderColor: "#FF9900",
+    borderWidth: 1,
     borderRadius: 10,
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)",
     alignItems: "center",
-    marginBottom: 15,
   },
   newStockForm: {
     marginTop: 20,
@@ -585,9 +555,12 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   scanButton: {
-    backgroundColor: "#4299e1",
-    padding: 10,
-    borderRadius: 8,
+    padding: 3,
+    height: 50,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#fff',
+   boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
   },
   scannerContainer: {
     flex: 1,
