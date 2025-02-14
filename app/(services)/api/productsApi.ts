@@ -113,6 +113,23 @@ export const createProduct = async (product: Product) => {
       throw error; 
     }
   };
+
+  export const updateProduct = async (productId:string,updates:Product)=>{
+
+    const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/products/${productId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updates),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to update product: ${response.statusText}`);
+    }
+
+    return await response.json();
+  }
   
 
   export const getProductByBarcode =async (barcode:string)=>{
