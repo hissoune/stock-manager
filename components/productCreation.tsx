@@ -14,7 +14,7 @@ import {
   Image,
   ScrollView,
 } from "react-native"
-import { Feather, Ionicons, MaterialIcons } from "@expo/vector-icons"
+import { AntDesign, Entypo, Feather, Ionicons, MaterialIcons } from "@expo/vector-icons"
 import MultiSelect from "react-native-multiple-select"
 import * as ImagePicker from "expo-image-picker"
 import type { stok } from "../constants/types"
@@ -331,13 +331,14 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
                   keyboardType="numeric"
                 />
                 <TouchableOpacity style={styles.submitStockButton} onPress={handleSubmitNewStock}>
-                  <Text style={styles.buttonText}>Submit New Stock</Text>
-                </TouchableOpacity>
+                <Entypo name="add-to-list" size={40} color="#FF9900" />
+:                </TouchableOpacity>
               </View>
             )}
 
             <TouchableOpacity style={styles.addButton} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>Add Product</Text>
+              {/* <Text style={styles.buttonText}>Add Product</Text> */}
+              <AntDesign name="save" size={40} color="#fff" />
             </TouchableOpacity>
           </ScrollView>
         </SafeAreaView>
@@ -486,7 +487,7 @@ const styles = StyleSheet.create({
   },
   addButton: {
     backgroundColor: "#FF9900",
-    paddingVertical: 15,
+    paddingVertical: 5,
     borderRadius: 10,
     alignItems: "center",
     marginTop: 50,
@@ -520,11 +521,13 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   submitStockButton: {
-    backgroundColor: "#2196F3",
-    paddingVertical: 15,
+    backgroundColor: "#fff",
+    paddingVertical: 3,
     borderRadius: 10,
     alignItems: "center",
     marginTop: 15,
+    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+
   },
   selectedStocksContainer: {
     marginTop: 20,
