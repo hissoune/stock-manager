@@ -4,19 +4,25 @@ import {
   ActivityIndicator,
   FlatList,
   Image,
+  Modal,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { getStocksAction, loadProducts } from '../(redux)/productsSlice';
+import { getProductByBarcodeActopn, getStocksAction, loadProducts } from '../(redux)/productsSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '../(redux)/store';
 import { useRouter } from 'expo-router';
 import ProductCreation from '../../components/productCreation';
+import { replaceIp } from '../helpers/replaceIp';
+import {  Ionicons } from '@expo/vector-icons';
+import CameraScanner from '@/components/CameraScanner';
 
 const Products = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [showScanner, setShowScanner] = useState(false)
 
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -27,6 +33,15 @@ const Products = () => {
     dispatch(loadProducts());
     dispatch(getStocksAction());
   }, [dispatch]);
+
+  const handleBarCodeScanned = ({ type, data }: { type: string; data: string }) => {   
+    console.log("datatdgydsygdsugydsygdsyugdsyug",data);
+       
+    dispatch(getProductByBarcodeActopn(data));
+    router.push(`/details/productDetails`);
+    setShowScanner(false)
+   
+  }
 
   if (isLoadind) {
     return (
@@ -48,7 +63,17 @@ const Products = () => {
         <Text style={styles.addButtonText}>+ Add New Product</Text>
       </TouchableOpacity>
       <ProductCreation visible={isModalVisible} onClose={() => setIsModalVisible(false)} stoks={stoks} />
-
+       
+      <View style={styles.filterContainer}>
+      <TouchableOpacity style={styles.scanButton} onPress={() => setShowScanner(true)} >
+         <Ionicons name="barcode-outline" size={24} color="#FF9900" />
+      </TouchableOpacity>
+        <TextInput
+          style={styles.searchBar} 
+          placeholder="Search movies and series" 
+          placeholderTextColor="#999" 
+        />     
+         </View>
       <View style={styles.filterContainer}>
         <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText}>Quantity</Text></TouchableOpacity>
         <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText}>Price</Text></TouchableOpacity>
@@ -60,8 +85,9 @@ const Products = () => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.card} onPress={() => router.navigate(`/details/productDetails?productData=${JSON.stringify(item)}`)}>
-            <Image source={{ uri: item.image }} style={styles.productImage} />
-            <View style={styles.productDetails}>
+              <Image source={{ uri: replaceIp(item.image || "", process.env.EXPO_PUBLIC_REPLACE || "") }}
+                    style={styles.productImage} /> 
+               <View style={styles.productDetails}>
               <Text style={styles.productName}>{item.name}</Text>
         <Text style={styles.productPrice}>${parseFloat(item.price).toFixed(3)}</Text>
               <Text style={[ item.stocks?.length > 0 ? styles.productInStock : styles.productOutOfStock]}>
@@ -71,6 +97,10 @@ const Products = () => {
           </TouchableOpacity>
         )}
       />
+
+{showScanner && (
+        <CameraScanner showScanner={showScanner} setShowScanner={setShowScanner} handleBarCodeScanned={handleBarCodeScanned}/>
+      )}
     </View>
   );
 };
@@ -173,6 +203,78 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#28a745',
     marginTop: 5,
+  },
+  scanButton: {
+    padding: 7,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#fff',
+   boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+  },
+  searchBar: {
+    flex: 1,
+    height: 40,
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    color: "#fff",
+    borderWidth: 1,
+    borderColor: "#FF9900",
+    marginRight: 10,
+    marginLeft: 10,
+  },
+  scannerContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.9)",
+  },
+  cameraview: {
+    flex: 1,
+  },
+  cameraoverlay: {
+    flex: 1,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    padding: 20,
+  },
+  
+  flipButton: {
+    padding: 10,
+    backgroundColor: "#FF9900",
+    borderRadius: 10,
+  },  
+  flipText: {
+    color: "#fff",
+  },
+  scannerOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  scannerMarker: {
+    width: 200,
+    height: 200,
+    borderWidth: 1,
+    borderColor: "#FF9900",
+  },
+
+  closeScannerButton: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+  },
+
+  arrowDownButton: {
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
 });
 

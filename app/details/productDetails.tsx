@@ -15,6 +15,7 @@ import { RootState } from '../(redux)/store';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { displayEditedByAction, loadProduct, updateQuantity } from '../(redux)/productsSlice';
 import MyMap from '@/components/GeoMap';
+import { replaceIp } from '../helpers/replaceIp';
 
 
 const ProductDetails = () => {
@@ -23,10 +24,10 @@ const ProductDetails = () => {
   const productObject = productData ? JSON.parse(decodeURIComponent(productData as string)) : null;
   const { product, isLoadind } = useSelector((state: RootState) => state.products);
   const { lastEditer } = useSelector((state: RootState) => state.products);
-    const { warehouseman } = useSelector((state: RootState) => state.auth);
+  const { warehouseman } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    if (!product || product.id !== productObject.id) {
+    if (!product || product.id !== productObject?.id) {
       dispatch(loadProduct(productObject));
       if (product?.id) {
         dispatch(displayEditedByAction(product.id));
@@ -59,7 +60,8 @@ const ProductDetails = () => {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
         <Text style={styles.productName}>{product.name}</Text>
-        <Image source={{ uri: product.image }} style={styles.productImage} />
+        <Image source={{ uri: replaceIp(product.image || "", process.env.EXPO_PUBLIC_REPLACE || "") }}
+         style={styles.productImage} />
         <Text style={styles.productPrice}>${parseFloat(product.price).toFixed(3)}</Text>
         <Text style={styles.productType}>{product.type}</Text>
 

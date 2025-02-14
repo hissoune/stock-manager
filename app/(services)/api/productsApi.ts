@@ -114,3 +114,16 @@ export const createProduct = async (product: Product) => {
     }
   };
   
+
+  export const getProductByBarcode =async (barcode:string)=>{
+     
+    const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/products?barcode=${barcode}`);
+
+            const products = await response.json();
+            if (!products) {
+                throw new Error('product ?????')
+            }
+
+            return products[0];
+  }
+

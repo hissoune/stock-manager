@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createProduct, displayEditedBy, getProducts, getStocks, UpdateQuantity } from "../(services)/api/productsApi";
+import { createProduct, displayEditedBy, getProductByBarcode, getProducts, getStocks, UpdateQuantity } from "../(services)/api/productsApi";
 import {  Product, stok, Warehouseman } from "@/constants/types";
 
 
@@ -44,6 +44,15 @@ export const createProductAction = createAsyncThunk(
     async (product:Product)=>{
         const Product = await createProduct(product);
         return Product;
+    }
+);
+
+export const getProductByBarcodeActopn = createAsyncThunk(
+    "products/scaned details",
+    async (barcode:string)=>{
+        
+    const product = await getProductByBarcode(barcode);    
+    return product;
     }
 );
 
@@ -127,6 +136,18 @@ const productSlice = createSlice({
         })
         .addCase(createProductAction.rejected, (state)=>{
             state.error = "d'accord c'est noté"
+        })
+        .addCase(getProductByBarcodeActopn.pending, (state)=>{
+            state.isLoadind = true;
+        })
+        .addCase(getProductByBarcodeActopn.fulfilled, (state,action)=>{           
+            state.product = { ...action.payload }
+            state.isLoadind = false;
+
+        })
+        .addCase(getProductByBarcodeActopn.rejected, (state)=>{
+            state.isLoadind = false;
+            state.error = "problem with the barcode "
         })
     },
 })
