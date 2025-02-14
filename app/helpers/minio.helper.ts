@@ -19,10 +19,12 @@ const config = {
 };
 
 try {
-  const response = await axios.post('http://192.168.9.40:4000/upload', formData, config);
+  const response = await axios.post(`${process.env.EXPO_PUBLIC_UPLOAD}/upload`, formData, config);
   return response.data.imageUrl
 } catch (error) {
   console.error('Error uploading image:', error);
+  return 'https://i.pinimg.com/736x/70/8c/08/708c08614099f90b849c6f7089f8effb.jpg'
+
 }
 
 };
