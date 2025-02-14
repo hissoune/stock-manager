@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { getProductByBarcodeActopn, getStocksAction, loadProducts } from '../(redux)/productsSlice';
+import { filterByAction, getProductByBarcodeActopn, getStocksAction, loadProducts, searchForProductsAction } from '../(redux)/productsSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '../(redux)/store';
 import { useRouter } from 'expo-router';
@@ -41,6 +41,17 @@ const Products = () => {
     router.push(`/details/productDetails`);
     setShowScanner(false)
    
+  };
+
+  const handelSearch = (searchQuery:string)=>{
+   
+          dispatch(searchForProductsAction(searchQuery))
+
+
+  };
+
+  const handelSort = (key:string)=>{
+    dispatch(filterByAction(key))
   }
 
   if (isLoadind) {
@@ -72,12 +83,13 @@ const Products = () => {
           style={styles.searchBar} 
           placeholder="Search movies and series" 
           placeholderTextColor="#999" 
+          onChangeText={(text) => handelSearch(text)}
         />     
          </View>
       <View style={styles.filterContainer}>
-        <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText}>Quantity</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText}>Price</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText}>Latest</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText} onPress={()=>handelSort('Quantity')}>Quantity</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText} onPress={()=>handelSort('Price')}>Price</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText} onPress={()=>handelSort('type')}>type</Text></TouchableOpacity>
       </View>
 
       <FlatList

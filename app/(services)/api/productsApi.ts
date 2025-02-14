@@ -127,3 +127,60 @@ export const createProduct = async (product: Product) => {
             return products[0];
   }
 
+  export const searchForProducts = async (searchQuery: string) => {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/products`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  
+    if (!response.ok) {
+      throw new Error("Failed to fetch products");
+    }
+  
+    const products = await response.json();
+  
+    return products.filter((product: any) =>
+      ["name", "supplier", "type"].some((key) =>
+        product[key]?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    );
+  };
+
+  export const filterBy = async (key: string) => {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/products`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  
+    if (!response.ok) {
+      throw new Error("Failed to fetch products");
+    }
+  
+    let products = await response.json();
+  
+    switch (key) {
+      case "Quantity":
+        products.sort((a: any, b: any) => a.quantity - b.quantity);
+        break;
+  
+      case "Price":
+        products.sort((a: any, b: any) => a.price - b.price);
+        break;
+  
+      case "type":
+        products.sort((a: any, b: any) => a.type.localeCompare(b.type));
+        break;
+  
+      default:
+        console.warn("Invalid filter key");
+    }
+  
+    return products;
+  };
+  
+  
+  

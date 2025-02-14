@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createProduct, displayEditedBy, getProductByBarcode, getProducts, getStocks, UpdateQuantity } from "../(services)/api/productsApi";
+import { createProduct, displayEditedBy, filterBy, getProductByBarcode, getProducts, getStocks, searchForProducts, UpdateQuantity } from "../(services)/api/productsApi";
 import {  Product, stok, Warehouseman } from "@/constants/types";
 
 
@@ -55,6 +55,22 @@ export const getProductByBarcodeActopn = createAsyncThunk(
     return product;
     }
 );
+export const searchForProductsAction = createAsyncThunk(
+    "products/search",
+    async (searchQuery:string)=>{
+        
+        const products = await searchForProducts(searchQuery);
+        return products;
+    }
+);
+export const filterByAction = createAsyncThunk(
+    "products/filter",
+    async (key:string)=>{
+        const products = await filterBy(key);
+        return products;
+    }
+);
+
 
 
 const intialState :{
@@ -148,6 +164,23 @@ const productSlice = createSlice({
         .addCase(getProductByBarcodeActopn.rejected, (state)=>{
             state.isLoadind = false;
             state.error = "problem with the barcode "
+        })
+        
+        .addCase(searchForProductsAction.fulfilled, (state,action)=>{
+            
+            state.products = action.payload;
+            state.isLoadind = false
+        })
+        .addCase(searchForProductsAction.rejected, state=>{
+            state.error = "nooo products"
+        })
+        .addCase(filterByAction.fulfilled, (state,action)=>{
+            
+            state.products = action.payload;
+            state.isLoadind = false
+        })
+        .addCase(filterByAction.rejected, state=>{
+            state.error = "nooo products"
         })
     },
 })
