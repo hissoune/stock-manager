@@ -19,6 +19,7 @@ import MyMap from '@/components/GeoMap';
 import { replaceIp } from '../helpers/replaceIp';
 import ProductUpdate from '@/components/productUpdate';
 import { loadStatistics } from '../(redux)/statisticsSlice';
+import ExportPDFButton from '@/components/productPdf';
 
 
 const ProductDetails = () => {
@@ -187,7 +188,8 @@ const ProductDetails = () => {
         <Text style={styles.outOfStock}>Out of Stock</Text>
       )}
           
-         
+          <ExportPDFButton product={product} buttonStyle='full' />              
+
       </View>
     </ScrollView>
   );
