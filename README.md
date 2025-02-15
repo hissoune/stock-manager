@@ -81,7 +81,7 @@ This project uses **JSON Server** for mock backend API.
 ### ▶️ Running the App
 Start the Expo development server:
 ```sh
-$ expo start
+$ npm start
 ```
 
 ---
@@ -103,9 +103,9 @@ $ expo start
 ---
 
 ## 🛠️ Technologies Used
-- **Frontend**: React Native (Expo)
+- **Frontend**: React Native Expo
 - **Backend**: JSON Server
-- **State Management**: Context API / Redux (Optional)
+- **State Management**:  Redux 
 - **Database**: JSON (Mock Data)
 - **PDF Generation**: `expo-print`
 
