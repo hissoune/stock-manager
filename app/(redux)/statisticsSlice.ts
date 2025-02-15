@@ -1,7 +1,7 @@
 
 
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getStatistics } from "../(services)/api/statisticsApi";
+import { getStatistics, updateTotalProducts } from "../(services)/api/statisticsApi";
 import { Statistics } from "@/constants/types";
 
 
@@ -9,6 +9,7 @@ import { Statistics } from "@/constants/types";
 export const loadStatistics = createAsyncThunk(
     "statistics/loadStatistics",
     async ()=>{
+        await updateTotalProducts()
         const response = await getStatistics();
         return response;
     }
