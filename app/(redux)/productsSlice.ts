@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createProduct, displayEditedBy, filterBy, getProductByBarcode, getProducts, getStocks, searchForProducts, updateProduct, UpdateQuantity } from "../(services)/api/productsApi";
+import { clearStoks, createProduct, displayEditedBy, filterBy, getProductByBarcode, getProducts, getStocks, searchForProducts, updateInputQuantity, updateProduct, UpdateQuantity } from "../(services)/api/productsApi";
 import {  Product, stok, Warehouseman } from "@/constants/types";
 
 
@@ -14,7 +14,10 @@ export const loadProducts = createAsyncThunk(
 export const updateQuantity =createAsyncThunk(
     "products/stoks/duantity",
     async ({ type, productId, stokId,warehousemanId }: { type: string; productId: string|undefined; stokId: number,warehousemanId:number }) => {
+        
         const updatedProduct = await UpdateQuantity(type, productId, stokId,warehousemanId);
+        console.log(updatedProduct);
+        
         return updatedProduct;
       
         
@@ -77,6 +80,24 @@ export const filterByAction = createAsyncThunk(
     async (key:string)=>{
         const products = await filterBy(key);
         return products;
+    }
+);
+
+export const updateInputQuantityAction = createAsyncThunk(
+    "products/InputChange",
+    async ({ Quantity, productId, stokId,warehousemanId }: { Quantity: number; productId: string|undefined; stokId: number,warehousemanId:number })=>{
+       const product = await updateInputQuantity(Quantity, productId, stokId, warehousemanId);
+       console.log(product);
+       
+       return product;
+    }
+);
+
+export const clearStoksAction = createAsyncThunk(
+    "products/clearStok",
+    async ({ productId, warehousemanId }: { productId: string, warehousemanId: number })=>{
+        const product = await clearStoks(productId, warehousemanId);
+        return product;
     }
 );
 
@@ -200,6 +221,28 @@ const productSlice = createSlice({
         })
         .addCase(updateProductAction.rejected, (state)=>{
             state.error = "cant update the product "
+        })
+        .addCase(updateInputQuantityAction.pending, (state)=>{
+            state.isLoadind = true
+        })
+        .addCase(updateInputQuantityAction.fulfilled, (state,action)=>{
+            state.product = action.payload;
+            state.isLoadind= false;
+
+        })
+        .addCase(updateInputQuantityAction.rejected, (state)=>{
+            state.isLoadind = false
+        })
+        .addCase(clearStoksAction.pending, (state)=>{
+            state.isLoadind = true
+        })
+        .addCase(clearStoksAction.fulfilled, (state,action)=>{
+            state.product = action.payload;
+            state.isLoadind= false;
+
+        })
+        .addCase(clearStoksAction.rejected, (state)=>{
+            state.isLoadind = false
         })
     },
 })
