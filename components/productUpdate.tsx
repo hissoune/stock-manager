@@ -101,8 +101,6 @@ const ProductUpdate = ({ visible, onClose, stoks, product }: { visible: boolean;
         return
       }
       await dispatch(updateProductAction({ productId: product.id, updates: productData }));
-    //  router.push("/(tabs)")
-    dispatch(loadStatistics());
       onClose()
     } catch (error) {
       console.error("Error updating product:", error)
