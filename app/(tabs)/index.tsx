@@ -1,19 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../(redux)/store';
 import { logoutAction } from '../(redux)/authSlice';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useRouter } from 'expo-router';
 import { loadStatistics } from '../(redux)/statisticsSlice';
+import { useFocusEffect } from '@react-navigation/native';
 
-interface Statistics {
-    totalProducts: number;
-    outOfStock: number;
-    totalStockValue: number;
-    mostAddedProducts: string[];
-    mostRemovedProducts: string[];
-}
+
 
 const StatisticsScreen: React.FC = () => {
     const router = useRouter();
@@ -21,10 +16,16 @@ const StatisticsScreen: React.FC = () => {
     const { statistics ,isLoadind} = useSelector((state: RootState) => state.stats);
     const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        dispatch(loadStatistics());
-
-    }, [dispatch]);
+    useFocusEffect(
+        useCallback(() => {
+            dispatch(loadStatistics());
+    
+          return () => {
+            console.log('Cleanup on unfocus'); 
+          };
+        }, [dispatch])
+      );
+    
 
    
 
@@ -50,7 +51,7 @@ const StatisticsScreen: React.FC = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <ScrollView >
             <Text style={styles.title}>📊 Inventory Statistics {isAuthenticated?"here":""}</Text>
 
             <View style={styles.card}>
@@ -71,7 +72,7 @@ const StatisticsScreen: React.FC = () => {
             <Text style={styles.subTitle}>🔥 Most Added Products:</Text>
             {statistics?.mostAddedProducts.length > 0 ? (
                 statistics.mostAddedProducts.map((product, index) => (
-                    <Text key={index} style={styles.listItem}>• {product}</Text>
+                    <Text key={index} style={styles.listItem}>• {product.productName}</Text>
                 ))
             ) : (
                 <Text style={styles.emptyText}>No data available</Text>
@@ -80,7 +81,7 @@ const StatisticsScreen: React.FC = () => {
             <Text style={styles.subTitle}>❌ Most Removed Products:</Text>
             {statistics?.mostRemovedProducts.length > 0 ? (
                 statistics.mostRemovedProducts.map((product, index) => (
-                    <Text key={index} style={styles.listItem}>• {product}</Text>
+                    <Text key={index} style={styles.listItem}>• {product.productName}</Text>
                 ))
             ) : (
                 <Text style={styles.emptyText}>No data available</Text>
@@ -89,7 +90,7 @@ const StatisticsScreen: React.FC = () => {
             <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                 <Text style={styles.logoutText}>🚪 Logout</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 };
 
