@@ -6,17 +6,19 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
+import { AntDesign, FontAwesome, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '../(redux)/store';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { displayEditedByAction, getStocksAction, loadProduct, updateQuantity } from '../(redux)/productsSlice';
+import { clearStoksAction, displayEditedByAction, getStocksAction, loadProduct, updateInputQuantityAction, updateQuantity } from '../(redux)/productsSlice';
 import MyMap from '@/components/GeoMap';
 import { replaceIp } from '../helpers/replaceIp';
 import ProductUpdate from '@/components/productUpdate';
+import { loadStatistics } from '../(redux)/statisticsSlice';
 
 
 const ProductDetails = () => {
@@ -28,7 +30,8 @@ const ProductDetails = () => {
   const { warehouseman } = useSelector((state: RootState) => state.auth);
   const { stoks } = useSelector((state: RootState) => state.products);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
+  const [quantityErr,setQuantityErr]= useState("")
   useEffect(() => {
     if (!product || product.id !== productObject?.id) {
       dispatch(loadProduct(productObject));
@@ -38,10 +41,48 @@ const ProductDetails = () => {
       }
     }
   }, [dispatch]);
+  useEffect(() => {
+    const initialQuantities:any = {};
+    product?.stocks.forEach(stock => {
+      initialQuantities[stock.id] = 0;
+    });
+    setQuantities(initialQuantities);
+  }, [product?.stocks]);
+
+ 
+
+  const handleInputChange = (text:string, stockId:number) => {
+    const newQuantity = parseInt(text) || 0;
+    setQuantities(prev => ({
+      ...prev,
+      [stockId]: newQuantity
+    }));
+  };
+
+  const handleConfirmQuantity = (stockId:number,Quantity:number) => {
+    dispatch(updateInputQuantityAction({ Quantity,productId:product?.id, stokId:stockId ,warehousemanId:parseInt(warehouseman?.id as string)}));
+    if (product?.id) {
+      dispatch(displayEditedByAction(product.id));
+    }
+
+
+  };
 
   const handelUpdateQuantity = (type: 'add' | 'remove', stokId: number) => {
+    
     dispatch(updateQuantity({ type,productId:product?.id, stokId:stokId ,warehousemanId:parseInt(warehouseman?.id as string)}));
+    if (product?.id) {
+      dispatch(displayEditedByAction(product.id));
+    }
   };
+
+  const handleClearStock = ()=>{
+    if (product?.id) {
+      dispatch(clearStoksAction({productId: product?.id, warehousemanId: parseInt(warehouseman?.id || '0')}));
+          dispatch(loadStatistics());
+      
+    }
+  }
 
   if (isLoadind) {
     return (
@@ -73,6 +114,22 @@ const ProductDetails = () => {
 
         <Text style={styles.productPrice}>${parseFloat(product.price).toFixed(3)}</Text>
         <Text style={styles.productType}>{product.type}</Text>
+         <View>
+         {product.stocks.length > 0 ? (
+           <TouchableOpacity style={styles.confirmQuantity} onPress={()=>handleClearStock()}>
+         <MaterialIcons name="clear-all" size={24} color="black" />   
+        </TouchableOpacity>
+        
+         ) : (
+          <TouchableOpacity disabled style={styles.confirmQuantity} >
+         <MaterialIcons name="clear-all" size={24} color="black" />   
+        </TouchableOpacity>
+         )
+        }
+
+           
+         </View>
+         <Text style={styles.quantityGuid}>remove All stocks </Text>
 
         <View style={styles.editorContainer}>
         <Image source={{ uri: lastEditer?.image || "https://i.pinimg.com/736x/8e/4e/c8/8e4ec81bac67ae771b557e76eae29a95.jpg" }} style={styles.editorImage} />
@@ -85,27 +142,52 @@ const ProductDetails = () => {
 
 
         <Text style={styles.stockTitle}>Stock Availability:</Text>
-        {product.stocks.length > 0 ? (
-          product.stocks.map((stock, index) => (
-            <View key={index} style={styles.stockItem}>
-              <Text style={styles.stockLocation}>{stock.name}</Text>
-             
-             <MyMap latitude={stock.localisation.latitude} longitude={stock.localisation.longitude} />
+       
+      {product.stocks.length > 0 ? (
+        product.stocks.map((stock, index) => (
+          <View key={index} style={styles.stockItem}>
+            <Text style={styles.stockLocation}>{stock.name}</Text>
+            
+            <MyMap latitude={stock.localisation.latitude} longitude={stock.localisation.longitude} />
 
-              <View style={styles.stockControl}>
-                <TouchableOpacity style={styles.arrowDownButton} onPress={() => handelUpdateQuantity('remove', stock.id)}>
-                  <AntDesign name="arrowdown" size={22} color="#fff" />
-                </TouchableOpacity>
-                <Text style={styles.stockQuantity}>{stock.quantity}</Text>
-                <TouchableOpacity style={styles.arrowUpButton} onPress={() => handelUpdateQuantity('add', stock.id)}>
-                  <AntDesign name="arrowup" size={22} color="#fff" />
-                </TouchableOpacity>
-              </View>
+            <View style={styles.stockControl}>
+              <TouchableOpacity style={styles.arrowDownButton} onPress={() => handelUpdateQuantity('remove', stock.id)}>
+                <FontAwesome name="minus" size={24} color="#fff" />
+              </TouchableOpacity>
+              <Text style={styles.stockQuantity}>{stock.quantity}</Text>
+              <TouchableOpacity style={styles.arrowUpButton} onPress={() => handelUpdateQuantity('add', stock.id)}>
+                <FontAwesome name="plus" size={24} color="#fff" />
+              </TouchableOpacity>
             </View>
-          ))
-        ) : (
-          <Text style={styles.outOfStock}>Out of Stock</Text>
-        )}
+            <View style={styles.InputControl}>
+              <TextInput
+                style={styles.inputQuantity}
+                placeholder="Stock Quantity"
+                value={quantities[stock.id]?.toString()}
+                onChangeText={(text) => handleInputChange(text, stock.id)}
+                keyboardType="numeric"
+              />
+              <TouchableOpacity style={styles.confirmQuantity} onPress={() => handleConfirmQuantity(stock.id,quantities[stock.id])}>
+                <MaterialCommunityIcons name="ticket-confirmation-outline" size={24} color="#FF9900" />
+              </TouchableOpacity>
+            </View>
+            {quantities[stock.id] !== stock.quantity ?(
+              <Text style={styles.quantityGuid}>Type the New Quantity and Conform </Text>
+            ):(
+               <Text style={styles.quantityError}>You must Confirm New Quantity 
+               </Text>
+
+            )}
+           
+            <View>
+              {stock.quantity === 0 && (<Text style={styles.outOfStock}>Out of Stock</Text>)}
+            </View>
+          </View>
+        ))
+      ) : (
+        <Text style={styles.outOfStock}>Out of Stock</Text>
+      )}
+          
          
       </View>
     </ScrollView>
@@ -216,7 +298,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   arrowDownButton: {
-    backgroundColor: 'red',
+    backgroundColor: '#e9d66b',
     padding: 10,
     borderRadius: 8,
     borderWidth: 1,
@@ -229,8 +311,46 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
+
+  quantityError:{
+    color:"red",
+    fontFamily:"simbol",
+    fontSize:10,
+  },
+  quantityGuid:{
+    color:"#FF9900",
+    fontFamily:"simbol",
+    fontSize:10,
+  },
+  confirmQuantity:{
+   paddingTop:5,
+    borderColor:"#FF9900",
+    borderWidth: 2,
+    borderTopRightRadius:5,
+    boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)',
+
+  },
+  inputQuantity: {
+    borderColor:"#e9d66b",
+    borderLeftWidth: 2,
+    borderRightWidth: 0,
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderRadius:10,
+    borderTopLeftRadius:3,
+     shadowColor:"#e9d66b",
+     shadowOffset: { width: 1, height: 1 },
+     shadowOpacity: undefined,
+    width:80,
+
+  },
+  InputControl:{
+    marginVertical:15,
+    flex:1,
+    flexDirection:"row"
+  },
   arrowUpButton: {
-    backgroundColor: 'green',
+    backgroundColor: '#FF9900',
     padding: 10,
     borderRadius: 8,
     borderWidth: 1,
@@ -247,6 +367,14 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     marginTop: 15,
+  },
+  editorInput:{
+    width: 100,
+    height: 70,
+    borderRadius: 5,
+    backgroundColor: '#f9f9f9',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   editorContainer: {
     flexDirection: "row",
