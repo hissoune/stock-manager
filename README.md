@@ -1,50 +1,130 @@
-# Welcome to your Expo app 👋
+# Stock Management App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## 📌 Overview
+The **Stock Manager** is an intuitive solution designed to modernize and simplify stock management for warehouse personnel. This application enables real-time product tracking, barcode scanning, and manual input for better stock control, reducing human errors.
 
-## Get started
+## 🚀 Features
 
-1. Install dependencies
+### 🔐 Authentication
+- Secure login using a personal secret code.
 
-   ```bash
-   npm install
-   ```
+### 📦 Product Management
+#### Product Identification
+- **Barcode Scanner**: Integrated scanner using `expo-barcode-scanner` for quick identification.
+- **Manual Input**: Option to manually enter barcode in case of scanner failure.
 
-2. Start the app
+#### Automatic Database Check
+- **Existing Product**:
+  - Modify stock by adding or removing quantities.
+  - View product details (name, type, price, quantity per warehouse).
+- **New Product**:
+  - Form-based creation with required fields: `name`, `type`, `price`, `supplier`, `initial quantity`, `image (optional)`.
 
-   ```bash
-    npx expo start
-   ```
+### 📋 Product List
+- Display all stored products with:
+  - Name, Type, Price, Quantity, and Stock Status.
+  - **Stock Indicators**:
+    - 🔴 Red: Out of stock
+    - 🟡 Yellow: Low stock (<10 units)
+- **Actions**:
+  - 🏷️ "Restock" button to increase quantity.
+  - ❌ "Unload" button to decrease quantity.
 
-In the output, you'll find options to open the app in a
+### 🔎 Advanced Features
+- **Search & Filter**: By `name`, `type`, `price`, or `supplier`.
+- **Sorting**: Sort by `price`, `alphabetically`, or `quantity`.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### 📊 Statistics & Reports
+- Dashboard displaying:
+  - Total number of products
+  - Total number of cities
+  - Products out of stock
+  - Total stock value
+  - Most frequently added/removed products
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### 📂 Data Export
+- Generate product reports in **PDF format** using `expo-print`.
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## 🛠️ Setup Instructions
 
-```bash
-npm run reset-project
+### ⚙️ Prerequisites
+Ensure you have the following installed:
+- [Node.js](https://nodejs.org/)
+- [npm](https://www.npmjs.com/)
+- [Expo CLI](https://expo.dev/)
+
+### 📥 Installation
+Clone the repository:
+```sh
+$ git clone https://github.com/hissoune/stock-manager
+$ cd stock-manager
+```
+Install dependencies:
+```sh
+$ npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 🔌 Backend Setup
+This project uses **JSON Server** for mock backend API.
+1. Move to the directory containing `db.json`.
+2. Install JSON Server globally:
+   ```sh
+   $ npm i -g json-server
+   ```
+3. Start the backend:
+   ```sh
+   $ npx json-server db.json --watch
+   ```
 
-## Learn more
+### ▶️ Running the App
+Start the Expo development server:
+```sh
+$ expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+---
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## 📝 Usage Guide
+1. **Login**: Enter your secret code to access the app.
+2. **Scan a Product**:
+   - Use the barcode scanner to fetch product details.
+   - If unavailable, manually enter the barcode.
+3. **Manage Stock**:
+   - Add or remove quantities.
+   - Add new products if not found.
+4. **Monitor Stock**:
+   - Use indicators to track low/out-of-stock items.
+   - Filter and sort products as needed.
+5. **Generate Reports**:
+   - Export product reports in PDF format.
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## 🛠️ Technologies Used
+- **Frontend**: React Native (Expo)
+- **Backend**: JSON Server
+- **State Management**: Context API / Redux (Optional)
+- **Database**: JSON (Mock Data)
+- **PDF Generation**: `expo-print`
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+## 🤝 Contributing
+1. Fork the repository.
+2. Create a new branch: `git checkout -b feature-branch`
+3. Commit changes: `git commit -m 'Add new feature'`
+4. Push to the branch: `git push origin feature-branch`
+5. Open a pull request.
+
+---
+
+## 🛡️ License
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 📞 Support
+For any questions or support, feel free to reach out via email or open an issue on GitHub.
+
