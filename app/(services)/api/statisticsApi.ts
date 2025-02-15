@@ -1,3 +1,4 @@
+import { Product, stok } from "@/constants/types";
 
 
 
@@ -157,4 +158,88 @@ export const updateMostAddedProducts = async (productId: string, productName: st
    
 
 
+  };
+
+
+  export const updateOutOfStock = async ()=>{
+
+
+    try {
+        const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/products`);
+
+        const products = await response.json();
+      
+        const statsResponse = await fetch(`${process.env.EXPO_PUBLIC_URL}/statistics`);
+        if (!statsResponse.ok) {
+          throw new Error(`Failed to fetch statistics: ${statsResponse.statusText}`);
+        }
+        const statistics = await statsResponse.json();
+      
+        if (!statistics || typeof statistics !== 'object') {
+          throw new Error("Invalid statistics data");
+        }
+
+        let totalOutOfStock = products.filter((product: Product) =>
+            product.stocks.some((stock) => stock.quantity === 0)
+        ).length;
+
+       
+        
+        const updateStatsResponse = await fetch(`${process.env.EXPO_PUBLIC_URL}/statistics`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({...statistics,outOfStock:totalOutOfStock}),
+          });
+      
+          if (!updateStatsResponse.ok) {
+            throw new Error(`Failed to update statistics: ${updateStatsResponse.statusText}`);
+          }
+
+
+    } catch (error) {
+        console.error("Error updating most removed products:", error);
+        throw error;
+    }
+   
+
+  };
+
+  export const updateTotalStockValue =async ()=>{
+    try {
+        const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/products`);
+
+        const products = await response.json();
+      
+        const statsResponse = await fetch(`${process.env.EXPO_PUBLIC_URL}/statistics`);
+        if (!statsResponse.ok) {
+          throw new Error(`Failed to fetch statistics: ${statsResponse.statusText}`);
+        }
+        const statistics = await statsResponse.json();
+      
+        if (!statistics || typeof statistics !== 'object') {
+          throw new Error("Invalid statistics data");
+        }
+
+       
+
+         const totalValueStock =  products.flatMap((product: Product) => product.stocks)
+        .reduce((sum:number, stock:stok) => sum + stock.quantity, 0);
+
+       
+        
+        const updateStatsResponse = await fetch(`${process.env.EXPO_PUBLIC_URL}/statistics`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({...statistics,totalStockValue:totalValueStock}),
+          });
+      
+          if (!updateStatsResponse.ok) {
+            throw new Error(`Failed to update statistics: ${updateStatsResponse.statusText}`);
+          }
+
+
+    } catch (error) {
+        console.error("Error updating total value stock:", error);
+        throw error;
+    }
   }
