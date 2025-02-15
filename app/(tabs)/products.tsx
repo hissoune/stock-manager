@@ -35,7 +35,6 @@ const Products = () => {
   }, [dispatch]);
 
   const handleBarCodeScanned = ({ type, data }: { type: string; data: string }) => {   
-    console.log("datatdgydsygdsugydsygdsyugdsyug",data);
        
     dispatch(getProductByBarcodeActopn(data));
     router.push(`/details/productDetails`);
