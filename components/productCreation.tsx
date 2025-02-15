@@ -80,13 +80,13 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
   }
 
   const handleStockSelection = (selectedItems: number[]) => {
-    const selectedStoks = stoks
-      .filter((stok) => selectedItems.includes(stok.id))
-      .map((stok) => ({ ...stok, quantity: 1 }))
-      setProduct({
-        ...product,
-        stocks: [...product.stocks, ...selectedStoks],
-      })  }
+    const updatedStocks = stoks.filter((stok) => selectedItems.includes(stok.id)).map((stok) => ({ ...stok, quantity: 1 }))
+
+    setProduct({
+      ...product,
+      stocks: updatedStocks,
+    })
+  }
 
   const handleImagePick = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -104,8 +104,10 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
   }
 
   const handleSubmit = async () => {
+
     try {
       const isValid = await productSchema.isValid(product)
+      
       if (!isValid) {
         const validationErrors = await productSchema.validate(product, { abortEarly: false }).catch((err) => err)
         const errorMessages = validationErrors.inner.reduce(
@@ -425,7 +427,6 @@ const styles = StyleSheet.create({
   },
   multiSelectIndicator: {
     backgroundColor: "#fff",
-    color: "#FF9900",
 
   },
   multiSelectItemsContainer: {

@@ -79,7 +79,6 @@ const ProductDetails = () => {
   const handleClearStock = ()=>{
     if (product?.id) {
       dispatch(clearStoksAction({productId: product?.id, warehousemanId: parseInt(warehouseman?.id || '0')}));
-          dispatch(loadStatistics());
       
     }
   }
