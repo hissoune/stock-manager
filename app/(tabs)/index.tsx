@@ -66,7 +66,7 @@ const StatisticsScreen: React.FC = () => {
 
             <View style={styles.card}>
                 <Text style={styles.label}>Total Stock Value:</Text>
-                <Text style={styles.value}>${statistics.totalStockValue}</Text>
+                <Text style={styles.value}>{statistics.totalStockValue}</Text>
             </View>
 
             <Text style={styles.subTitle}>🔥 Most Added Products:</Text>
