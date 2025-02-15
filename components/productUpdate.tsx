@@ -26,11 +26,14 @@ import { uploadImageToBackend } from "@/app/helpers/minio.helper"
 import { replaceIp } from "@/app/helpers/replaceIp"
 import CameraScanner from "./CameraScanner"
 import { updateProductAction } from "@/app/(redux)/productsSlice"
+import { loadStatistics } from "@/app/(redux)/statisticsSlice"
+import { useRouter } from "expo-router"
 
 const ProductUpdate = ({ visible, onClose, stoks, product }: { visible: boolean; onClose: any; stoks: stok[]; product: Product }) => {
   const [errors, setErrors] = useState<any>({})
   const [showAddStock, setShowAddStock] = useState(false)
   const [showScanner, setShowScanner] = useState(false)
+  const router = useRouter();
 
   const dispatch = useAppDispatch()
   const { warehouseman } = useSelector((state: RootState) => state.auth)
@@ -80,18 +83,26 @@ const ProductUpdate = ({ visible, onClose, stoks, product }: { visible: boolean;
   }
 
   const handleSubmit = async () => {
+    
+    
     try {
       const isValid = await productSchema.isValid(productData)
+      console.log(isValid);
+      
       if (!isValid) {
-        const validationErrors = await productSchema.validate(productData, { abortEarly: false }).catch((err) => err)
+        const validationErrors = await productSchema.validate(productData).catch((err) => err)
         const errorMessages = validationErrors.inner.reduce(
           (acc: any, err: any) => ({ ...acc, [err.path]: err.message }),
           {},
         )
+
+         
         setErrors(errorMessages)
         return
       }
-      dispatch(updateProductAction({ productId: product.id, updates: productData }))
+      await dispatch(updateProductAction({ productId: product.id, updates: productData }));
+    //  router.push("/(tabs)")
+    dispatch(loadStatistics());
       onClose()
     } catch (error) {
       console.error("Error updating product:", error)
