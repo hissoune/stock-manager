@@ -7,13 +7,27 @@ export type Warehouseman = {
     warehouseId:number
 }
 
-export type Statistics = {
-    totalProducts:number,
-    outOfStock:number,
-    totalStockValue:number,
-    mostAddedProducts:string[],
-    mostRemovedProducts:string[]
-   }
+export type  Statistics = {
+  totalProducts: number;
+  outOfStock: number;
+  totalStockValue: number;
+  mostAddedProducts: [
+      {
+          productId: string,
+          productName:string,
+          addedCount: number,
+          lastAddedAt: Date
+        }
+  ];
+  mostRemovedProducts: [
+      {
+          productId: string,
+          productName:string,
+          removedCount: number,
+          lastRemovedAt: Date
+        }
+  ];
+}
 
   export type stok ={
     id:number,
