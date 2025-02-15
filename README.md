@@ -1,4 +1,4 @@
-# Stock Management App
+# Stock Manager
 
 ## 📌 Overview
 The **Stock Manager** is an intuitive solution designed to modernize and simplify stock management for warehouse personnel. This application enables real-time product tracking, barcode scanning, and manual input for better stock control, reducing human errors.
