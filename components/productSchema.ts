@@ -1,9 +1,9 @@
 import * as yup from 'yup';
 
 const stockSchema = yup.object().shape({
-  id: yup.number().integer().required('Stock ID is required'),
+  id: yup.number().required('Stock ID is required'),
   name: yup.string().required('Stock name is required'),
-  quantity: yup.number().integer().min(0, 'Quantity cannot be negative').required('Quantity is required'),
+  quantity: yup.number().min(0, 'Quantity cannot be negative').required('Quantity is required'),
   localisation: yup.object().shape({
     city: yup.string().required('City is required'),
     latitude: yup.number().required('Latitude is required'),

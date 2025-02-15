@@ -104,10 +104,9 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
   }
 
   const handleSubmit = async () => {
-
+    
     try {
       const isValid = await productSchema.isValid(product)
-      
       if (!isValid) {
         const validationErrors = await productSchema.validate(product, { abortEarly: false }).catch((err) => err)
         const errorMessages = validationErrors.inner.reduce(
@@ -334,7 +333,7 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
                 />
                 <TouchableOpacity style={styles.submitStockButton} onPress={handleSubmitNewStock}>
                 <Entypo name="add-to-list" size={40} color="#FF9900" />
-:                </TouchableOpacity>
+              </TouchableOpacity>
               </View>
             )}
 
