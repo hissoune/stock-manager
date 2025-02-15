@@ -61,6 +61,7 @@ const ProductDetails = () => {
   };
 
   const handleConfirmQuantity = (stockId:number,Quantity:number) => {
+   
     dispatch(updateInputQuantityAction({ Quantity,productId:product?.id, stokId:stockId ,warehousemanId:parseInt(warehouseman?.id as string)}));
     if (product?.id) {
       dispatch(displayEditedByAction(product.id));
@@ -105,8 +106,11 @@ const ProductDetails = () => {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
         <Text style={styles.productName}>{product.name}</Text>
-        <Image source={{ uri: replaceIp(product.image || "", process.env.EXPO_PUBLIC_REPLACE || "") }}
+        <View>
+          <Image source={{ uri: replaceIp(product.image || "", process.env.EXPO_PUBLIC_REPLACE || "") }}
          style={styles.productImage} />
+        </View>
+        
           <TouchableOpacity style={styles.addButton}  onPress={() => setIsModalVisible(true)} >
           <MaterialCommunityIcons name="folder-edit-outline" size={40} color="#FF9900" />
           </TouchableOpacity>
@@ -154,7 +158,10 @@ const ProductDetails = () => {
               <TouchableOpacity style={styles.arrowDownButton} onPress={() => handelUpdateQuantity('remove', stock.id)}>
                 <FontAwesome name="minus" size={24} color="#fff" />
               </TouchableOpacity>
+              <View style={styles.stockQuantityContainer} >
               <Text style={styles.stockQuantity}>{stock.quantity}</Text>
+
+              </View>
               <TouchableOpacity style={styles.arrowUpButton} onPress={() => handelUpdateQuantity('add', stock.id)}>
                 <FontAwesome name="plus" size={24} color="#fff" />
               </TouchableOpacity>
@@ -206,6 +213,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     paddingBottom: 20,
+    padding:1
   },
   loaderContainer: {
     flex: 1,
@@ -222,8 +230,9 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
   },
+  
   productImage: {
-    width: 330,
+    width: 300,
     height: 300,
     borderRadius: 15,
     marginBottom: 25,
@@ -285,11 +294,14 @@ const styles = StyleSheet.create({
     gap: 12,
     marginTop: 10,
   },
+  stockQuantityContainer:{
+    width:100
+  },
   stockQuantity: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
-    width: 30,
+    
     textAlign: 'center',
   },
   outOfStock: {
