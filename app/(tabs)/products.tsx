@@ -5,6 +5,7 @@ import {
   FlatList,
   Image,
   Modal,
+  RefreshControl,
   StyleSheet,
   Text,
   TextInput,
@@ -23,6 +24,7 @@ import CameraScanner from '@/components/CameraScanner';
 const Products = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [showScanner, setShowScanner] = useState(false)
+  const [refreshing, setRefreshing] = useState(false);
 
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -52,6 +54,16 @@ const Products = () => {
   const handelSort = (key:string)=>{
     dispatch(filterByAction(key))
   }
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    dispatch(loadProducts())
+      .then(() => {
+        setRefreshing(false);
+        
+      })
+      .catch(() => setRefreshing(false));
+  };
 
   if (isLoadind) {
     return (
@@ -87,7 +99,7 @@ const Products = () => {
         />     
          </View>
       <View style={styles.filterContainer}>
-        <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText} onPress={()=>handelSort('Quantity')}>Quantity</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.filterButton} onPress={() => handelSort('Quantity')}><Text style={styles.filterText}>Quantity</Text></TouchableOpacity>
         <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText} onPress={()=>handelSort('Price')}>Price</Text></TouchableOpacity>
         <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText} onPress={()=>handelSort('type')}>type</Text></TouchableOpacity>
       </View>
@@ -95,6 +107,9 @@ const Products = () => {
       <FlatList
         data={products}
         keyExtractor={(item) => item.id.toString()}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.card} onPress={() => router.navigate(`/details/productDetails?productData=${JSON.stringify(item)}`)}>
               <Image source={{ uri: replaceIp(item.image || "", process.env.EXPO_PUBLIC_REPLACE || "") }}
@@ -107,7 +122,9 @@ const Products = () => {
               </Text>
             </View>
           </TouchableOpacity>
+          
         )}
+       
       />
 
 {showScanner && (
