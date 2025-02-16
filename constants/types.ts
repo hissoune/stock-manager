@@ -2,6 +2,7 @@ export type Warehouseman = {
     id:string,
     name:string,
     dob:string,
+    city:string
     image:string
     secretKey:string
     warehouseId:number

@@ -1,10 +1,10 @@
-import { Product, stok, editedBy } from '../../../constants/types';
-import { updateMostAddedProducts, updateMostRemovedProducts, updateTotalProducts } from './statisticsApi';
+import { Product, stok } from '../../../constants/types';
+import {  updateMostRemovedProducts } from './statisticsApi';
 
 
 export const getProducts = async () => {
-
-  const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/products`,
+  try {
+     const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/products`,
     {
       method: "GET",
       headers: {
@@ -14,10 +14,16 @@ export const getProducts = async () => {
   );
   const data = await response.json();
   return data;
+  } catch (error) {
+     throw new Error("Failed to get products : Internal Server Error")
+  }
+ 
 }
 export const UpdateQuantity = async (type: string, productId: string | undefined, stokId: number, warehousemanId: number) => {
   const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/products/${productId}`);
-
+  if (!response.ok) {
+    throw new Error(`Failed to fetch product: ${response.statusText}`);
+  }
   const product = await response.json();
 
   let updatedStocks = []
@@ -126,7 +132,6 @@ export const createProduct = async (product: Product) => {
     }
 
     const data = await response.json();
-    await updateMostAddedProducts(data.id,data.name)
     return data;
   } catch (error) {
     console.error("Error creating product:", error);
@@ -148,7 +153,6 @@ export const updateProduct = async (productId: string, updates: Product) => {
     throw new Error(`Failed to update product: ${response.statusText}`);
   }
    const updatedProduct = await response.json();
-   await updateMostAddedProducts(updatedProduct.id,updatedProduct.name)
 
   return updatedProduct
 }
