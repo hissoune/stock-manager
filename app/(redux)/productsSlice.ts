@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { clearStoks, createProduct, displayEditedBy, filterBy, getProductByBarcode, getProducts, getStocks, searchForProducts, updateInputQuantity, updateProduct, UpdateQuantity } from "../(services)/api/productsApi";
 import {  Product, stok, Warehouseman } from "@/constants/types";
+import { updateMostAddedProducts } from "../(services)/api/statisticsApi";
 
 
 export const loadProducts = createAsyncThunk(
@@ -46,6 +47,8 @@ export const createProductAction = createAsyncThunk(
     "products/create",
     async (product:Product)=>{
         const Product = await createProduct(product);
+        await updateMostAddedProducts(Product.id,Product.name)
+
         return Product;
     }
 );
@@ -54,6 +57,8 @@ export const updateProductAction = createAsyncThunk<Product, { productId: string
     async ({ productId, updates })=>{
         
         const product = await updateProduct(productId, updates);
+        await updateMostAddedProducts(product.id,product.name)
+
         return product;
     }
 
