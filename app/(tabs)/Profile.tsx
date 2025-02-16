@@ -5,6 +5,7 @@ import { RootState } from '../(redux)/store';
 import { useRouter } from 'expo-router';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { logoutAction } from '../(redux)/authSlice';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const Profile = () => {
     const { warehouseman } = useSelector((state: RootState) => state.auth);
@@ -38,8 +39,8 @@ const Profile = () => {
                 <Text style={styles.name}>{warehouseman.name || 'Name not available'}</Text>
                 <Text style={styles.roleBadge}>🏭 Warehouse Manager</Text>
                  <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                                <Text style={styles.logoutText}>🚪 Logout</Text>
-                            </TouchableOpacity>
+                 <MaterialIcons name="logout" size={24} color="#FF9900" />
+                 </TouchableOpacity>
             </View>
 
             <View style={styles.infoBox}>
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     container: {
-        flex: 1,
+      
         backgroundColor: '#fff', 
         alignItems: 'center',
         paddingBottom: 20,
@@ -323,8 +324,11 @@ const styles = StyleSheet.create({
         marginTop: 10,
         paddingVertical: 10,
         paddingHorizontal: 20,
-        backgroundColor: '#FF0000',
-        borderRadius: 5,
+        borderColor: '#FF9900',
+        borderWidth:1,
+        borderRadius: 10,
+        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+
     },
     moreContent: {
         width: '90%',
