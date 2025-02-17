@@ -3,15 +3,42 @@ import { Product, stok } from "@/constants/types";
 
 
 export const getStatistics = async () => {
-    const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/statistics`,
-        {method:"GET",
-        headers:{
-            "Content-Type":"application/json",
-        }
-    }
-    );
-    const data = await response.json();
-    return data;
+
+  try {
+  const [productsResponse, statsResponse] = await Promise.all([
+    fetch(`${process.env.EXPO_PUBLIC_URL}/products`),
+    fetch(`${process.env.EXPO_PUBLIC_URL}/statistics`),
+  ]);
+
+  if (!productsResponse.ok || !statsResponse.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  const products: Product[] = await productsResponse.json();
+  const statistics = await statsResponse.json();
+
+  if (!statistics || typeof statistics !== "object") {
+    throw new Error("Invalid statistics data");
+  }
+
+  const getProductDetails = (productId: string) => products.find((product) => product.id === productId);
+
+  statistics.mostAddedProducts = (statistics.mostAddedProducts || []).map((item: any) => ({
+    ...item,
+    product: getProductDetails(item.productId),
+  }));
+
+  statistics.mostRemovedProducts = (statistics.mostRemovedProducts || []).map((item: any) => ({
+    ...item,
+    product: getProductDetails(item.productId),
+  }));
+
+  return statistics;
+} catch (error) {
+  console.error("Error fetching statistics with products:", error);
+  throw error;
+}
+   
 }
 
 
