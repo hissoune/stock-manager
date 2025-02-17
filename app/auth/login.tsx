@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    color:"#FF9900"
   },
   label:
     {
@@ -96,7 +97,7 @@ const styles = StyleSheet.create({
   button: {
     width: "100%",
     padding: 10,
-    backgroundColor: "black",
+    backgroundColor: "#FF9900",
     alignItems: "center",
     borderRadius: 5,
   },

@@ -1,3 +1,4 @@
+import { getTotalQuantity } from '@/app/helpers/getTotalQuantity';
 import { Product, stok } from '../../../constants/types';
 import {  updateMostRemovedProducts } from './statisticsApi';
 
@@ -207,11 +208,11 @@ export const filterBy = async (key: string) => {
 
   switch (key) {
     case "Quantity":
-      products.sort((a: any, b: any) => a.quantity - b.quantity);
+      products.sort((a: any, b: any) => getTotalQuantity(a.stocks) - getTotalQuantity(b.stocks));
       break;
 
     case "Price":
-      products.sort((a: any, b: any) => a.price - b.price);
+      products.sort((a: any, b: any) => b.price - a.price);
       break;
 
     case "type":

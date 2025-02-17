@@ -189,7 +189,7 @@ const productSlice = createSlice({
             state.error = "d'accord c'est noté"
         })
         .addCase(getProductByBarcodeActopn.pending, (state)=>{
-            state.isLoadind = true;
+            state.isLoadind = false;
         })
         .addCase(getProductByBarcodeActopn.fulfilled, (state,action)=>{           
             state.product = { ...action.payload }

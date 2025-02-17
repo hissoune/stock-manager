@@ -20,7 +20,7 @@ import * as ImagePicker from "expo-image-picker"
 import type { stok } from "../constants/types"
 import productSchema from "./productSchema"
 import { useAppDispatch } from "@/hooks/useAppDispatch"
-import { createProductAction } from "@/app/(redux)/productsSlice"
+import { createProductAction, getProductByBarcodeActopn } from "@/app/(redux)/productsSlice"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/app/(redux)/store"
 import type { editedBy } from "../constants/types"
@@ -32,7 +32,8 @@ import CameraScanner from "./CameraScanner"
 const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClose: any; stoks: stok[] }) => {
   const [errors, setErrors] = useState<any>({})
   const [showAddStock, setShowAddStock] = useState(false)
-  const [showScanner, setShowScanner] = useState(false)
+  const [showScanner, setShowScanner] = useState(false);
+  const [barcodeExist,setbarcodeExist] = useState(false)
 
   const dispatch = useAppDispatch()
   const { warehouseman } = useSelector((state: RootState) => state.auth)
@@ -73,7 +74,9 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
   })
 
 
-  
+  useEffect(() => {
+    console.log("Barcode state updated:", barcodeExist);
+  }, [barcodeExist]);
 
   const handleChange = (key: keyof typeof product, value: string) => {
     setProduct({ ...product, [key]: value })
@@ -102,7 +105,7 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
       setProduct({ ...product, image: image })
     }
   }
-
+  
   const handleSubmit = async () => {
     
     try {
@@ -114,6 +117,13 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
           {},
         )
         setErrors(errorMessages)
+        return
+      }
+      const productBybarCode =await dispatch(getProductByBarcodeActopn(product.barcode)).unwrap();;
+
+      if (productBybarCode) {        
+        setbarcodeExist(() => {return true});
+        
         return
       }
       dispatch(createProductAction(product))
@@ -182,6 +192,9 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
         onChangeText={(text) => handleChange(item.value, text)}
         keyboardType={item.value === "price" || item.value === "solde" ? "numeric" : "default"}
       />
+     {barcodeExist && item.value == "barcode"  && (
+  <Text style={styles.errorText}>A product with this barcode already exists.</Text>
+)}
       {errors[item.value] && <Text style={styles.errorText}>{errors[item.value]}</Text>}
     </View>
   )
@@ -205,6 +218,7 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
               <Ionicons name="close" size={24} color="#FF9900" />
             </TouchableOpacity>
             <Text style={styles.title}>Add New Product</Text>
+           
             <FlatList
               data={formFields}
               renderItem={renderItem}
@@ -225,6 +239,9 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
                       <Ionicons name="barcode-outline" size={40} color="#FF9900" />
                     </TouchableOpacity>
                   </View>
+                  {barcodeExist  && (
+                        <Text style={styles.errorText}>A product with this barcode already exists.</Text>
+                      )}
                   {errors.barcode && <Text style={styles.errorText}>{errors.barcode}</Text>}
                 </View>
               )}
