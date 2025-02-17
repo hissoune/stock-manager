@@ -9,6 +9,7 @@ import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useRouter } from 'expo-router';
 import { loadStatistics } from '../(redux)/statisticsSlice';
 import { useFocusEffect } from '@react-navigation/native';
+import { replaceIp } from '../helpers/replaceIp';
 
 const StatisticsScreen: React.FC = () => {
     const router = useRouter();
@@ -73,11 +74,15 @@ const StatisticsScreen: React.FC = () => {
                 <Text style={styles.sectionTitle}>🔥 Most Added Product</Text>
                 {statistics.mostAddedProducts.length > 0 ? (
                     <View style={styles.featuredCard}>
-                        <Text style={styles.featuredTitle}>{statistics.mostAddedProducts[0].productName}</Text>
-                        <Text style={styles.featuredCount}>
-                            {statistics.mostAddedProducts[0].addedCount} added
-                        </Text>
-                    </View>
+                    <Text style={styles.featuredTitle}>{statistics.mostAddedProducts[0].productName}</Text>
+                    <Image source={{ uri: replaceIp(statistics.mostAddedProducts[0].product.image || "", process.env.EXPO_PUBLIC_REPLACE || "") }}                               style={styles.productImage} /> 
+                    <Text style={styles.featuredCount}>
+                         Added at: {statistics.mostAddedProducts[0].lastAddedAt.toLocaleString().split('T')}
+                    </Text>
+                    <Text style={styles.featuredCount}>
+                         Added: {statistics.mostAddedProducts[0].addedCount} times
+                    </Text>
+                </View>
                 ) : (
                     <Text style={styles.emptyText}>No data available</Text>
                 )}
@@ -91,8 +96,13 @@ const StatisticsScreen: React.FC = () => {
             {statistics.mostRemovedProducts.length > 0 ? (
                     <View style={styles.featuredCard}>
                         <Text style={styles.featuredTitle}>{statistics.mostRemovedProducts[0].productName}</Text>
+                        <Image source={{ uri: replaceIp(statistics.mostRemovedProducts[0].product.image || "", process.env.EXPO_PUBLIC_REPLACE || "") }}
+                                            style={styles.productImage} /> 
                         <Text style={styles.featuredCount}>
-                            {statistics.mostRemovedProducts[0].removedCount} removed at: {statistics.mostRemovedProducts[0].lastRemovedAt.toLocaleString()}
+                             removed at: {statistics.mostRemovedProducts[0].lastRemovedAt.toLocaleString().split('T')}
+                        </Text>
+                        <Text style={styles.featuredCount}>
+                             Removed: {statistics.mostRemovedProducts[0].removedCount} times
                         </Text>
                     </View>
                 ) : (
@@ -144,6 +154,12 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginVertical:20,
     },
+    productImage: {
+        width: 80,
+        height: 80,
+        borderRadius: 8,
+        marginRight: 15,
+      },
     heroTitle: {
         fontSize: 24,
         fontWeight: 'bold',
@@ -201,6 +217,9 @@ const styles = StyleSheet.create({
         textAlign:'center'
     },
     featuredCard: {
+        flex:1,
+        alignContent:'center',
+        alignItems:'center',
         backgroundColor: '#FFF',
         padding: 15,
         borderRadius: 10,

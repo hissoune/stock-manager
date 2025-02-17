@@ -14,6 +14,7 @@ export type  Statistics = {
   totalStockValue: number;
   mostAddedProducts: [
       {
+          product: any
           productId: string,
           productName:string,
           addedCount: number,
@@ -22,6 +23,7 @@ export type  Statistics = {
   ];
   mostRemovedProducts: [
       {
+          product: any
           productId: string,
           productName:string,
           removedCount: number,
