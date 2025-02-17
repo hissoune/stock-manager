@@ -81,7 +81,7 @@ const StatisticsScreen: React.FC = () => {
                 ) : (
                     <Text style={styles.emptyText}>No data available</Text>
                 )}
-                <TouchableOpacity >
+                <TouchableOpacity onPress={()=>router.push(`/details/MostRemovedOrAdded?type='added'`)}>
                     <Text style={styles.seeAll}>See All ({statistics.mostAddedProducts.length})</Text>
                 </TouchableOpacity>
             </View>
@@ -98,7 +98,7 @@ const StatisticsScreen: React.FC = () => {
                 ) : (
                     <Text style={styles.emptyText}>No data available</Text>
                 )}
-                <TouchableOpacity >
+                <TouchableOpacity onPress={()=>router.push(`/details/MostRemovedOrAdded?type=removed`)}>
                     <Text style={styles.seeAll}>See All ({statistics.mostRemovedProducts.length})</Text>
                 </TouchableOpacity>
             </View>
