@@ -123,7 +123,6 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
 
       if (productBybarCode) {        
         setbarcodeExist(() => {return true});
-        console.log(barcodeExist);
         
         return
       }
@@ -193,6 +192,9 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
         onChangeText={(text) => handleChange(item.value, text)}
         keyboardType={item.value === "price" || item.value === "solde" ? "numeric" : "default"}
       />
+     {barcodeExist && item.value == "barcode"  && (
+  <Text style={styles.errorText}>A product with this barcode already exists.</Text>
+)}
       {errors[item.value] && <Text style={styles.errorText}>{errors[item.value]}</Text>}
     </View>
   )
@@ -216,9 +218,7 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
               <Ionicons name="close" size={24} color="#FF9900" />
             </TouchableOpacity>
             <Text style={styles.title}>Add New Product</Text>
-            <View>   
-              {barcodeExist && <Text style={styles.title}>fuck yoy all</Text>}
-            </View>
+           
             <FlatList
               data={formFields}
               renderItem={renderItem}
@@ -239,6 +239,9 @@ const ProductCreation = ({ visible, onClose, stoks }: { visible: boolean; onClos
                       <Ionicons name="barcode-outline" size={40} color="#FF9900" />
                     </TouchableOpacity>
                   </View>
+                  {barcodeExist  && (
+                        <Text style={styles.errorText}>A product with this barcode already exists.</Text>
+                      )}
                   {errors.barcode && <Text style={styles.errorText}>{errors.barcode}</Text>}
                 </View>
               )}
