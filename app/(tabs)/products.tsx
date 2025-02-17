@@ -18,7 +18,7 @@ import { RootState } from '../(redux)/store';
 import { useRouter } from 'expo-router';
 import ProductCreation from '../../components/productCreation';
 import { replaceIp } from '../helpers/replaceIp';
-import {  Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import {  FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import CameraScanner from '@/components/CameraScanner';
 
 const Products = () => {
@@ -117,9 +117,17 @@ const Products = () => {
                <View style={styles.productDetails}>
               <Text style={styles.productName}>{item.name}</Text>
         <Text style={styles.productPrice}>${parseFloat(item.price).toFixed(3)}</Text>
-              <Text style={[ item.stocks?.length > 0 ? styles.productInStock : styles.productOutOfStock]}>
-                {item.stocks?.length > 0 ? 'In Stock' : 'Out of Stock'}
+              <Text style={[ item.stocks && item.stocks.reduce((sum, stock) => sum + (stock.quantity || 0), 0) > 0 ? item.stocks.reduce((sum, stock) => sum + (stock.quantity || 0), 0) > 100? styles.productInStock : styles.productweekStock:styles.productOutOfStock]}>
+                {item.stocks && item.stocks.reduce((sum, stock) => sum + (stock.quantity || 0), 0) > 0 ? item.stocks.reduce((sum, stock) => sum + (stock.quantity || 0), 0) > 100? 'In Stock' : 'Weak Stock':'Out of Stock'}
               </Text>
+              {parseFloat(item.solde) < 100 &&(
+                                <View style={styles.soldContainer}>
+                                <FontAwesome name="fire" size={20} color="#FF4500" />
+                                <Text style={styles.soldText}>Hot! {item.solde+ " $$" || 0} Sold - Get Yours Now!</Text>
+                            </View>
+                            )
+                            
+                            }
             </View>
           </TouchableOpacity>
           
@@ -134,7 +142,7 @@ const Products = () => {
   );
 };
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
@@ -235,6 +243,11 @@ const styles = StyleSheet.create({
     color: '#28a745',
     marginTop: 5,
   },
+  productweekStock: {
+    fontSize: 14,
+    color: 'yellow',
+    marginTop: 5,
+  },
   scanButton: {
     padding: 7,
     borderRadius: 6,
@@ -307,6 +320,24 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
+  soldContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 5,
+},
+soldText: {
+    marginLeft: 5,
+    fontWeight: 'bold',
+    color: '#FF4500',
+    fontSize: 14,
+},
+cardHover: {
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+},
 });
 
 export default Products;
